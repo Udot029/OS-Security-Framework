@@ -1,0 +1,33 @@
+{
+  "name": "os-security-framework",
+  "version": "1.0.0",
+  "description": "OS Security Framework",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "build:frontend": "tsc -p tsconfig.json",
+    "postbuild": "node scripts/fix-dist-imports.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Udot029/OS-Security-Framework.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Udot029/OS-Security-Framework/issues"
+  },
+  "homepage": "https://github.com/Udot029/OS-Security-Framework#readme",
+  "dependencies": {
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "typescript": "^6.0.3"
+  }
+}

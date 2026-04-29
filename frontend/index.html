@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OS Security Framework</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: Inter, system-ui, sans-serif;
+      background: #eef2f7;
+      color: #111827;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background: radial-gradient(circle at top, #dbeafe 0%, #f8fafc 40%, #eef2f7 100%);
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .page-shell {
+      width: min(100%, 1180px);
+      background: rgba(255, 255, 255, 0.96);
+      border: 1px solid rgba(148, 163, 184, 0.24);
+      border-radius: 32px;
+      box-shadow: 0 28px 80px rgba(15, 23, 42, 0.14);
+      overflow: hidden;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 24px 32px;
+      background: #0f172a;
+      color: #f8fafc;
+    }
+
+    .topbar h1 {
+      margin: 0;
+      font-size: 1.35rem;
+      letter-spacing: -0.03em;
+    }
+
+    .topbar .tag {
+      padding: 8px 14px;
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 999px;
+      font-size: 0.9rem;
+      color: #e2e8f0;
+    }
+
+    .hero {
+      display: grid;
+      gap: 22px;
+      padding: 40px 32px 24px;
+      background: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%);
+      color: #f8fafc;
+    }
+
+    .hero h2 {
+      margin: 0;
+      font-size: clamp(2rem, 4vw, 3rem);
+      line-height: 1.05;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 700px;
+      font-size: 1rem;
+      letter-spacing: -0.01em;
+      color: #cbd5e1;
+    }
+
+    .hero .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+    }
+
+    .stat-card {
+      padding: 20px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(148, 163, 184, 0.16);
+    }
+
+    .stat-card strong {
+      display: block;
+      font-size: 1.55rem;
+      margin-bottom: 6px;
+      color: #f8fafc;
+    }
+
+    .stat-card span {
+      color: #cbd5e1;
+      font-size: 0.95rem;
+    }
+
+    .content {
+      display: grid;
+      gap: 28px;
+      padding: 32px;
+    }
+
+    .content-section {
+      padding: 28px;
+      border-radius: 24px;
+      background: #ffffff;
+      border: 1px solid rgba(148, 163, 184, 0.16);
+    }
+
+    .content-section h3 {
+      margin: 0 0 12px;
+      font-size: 1.25rem;
+      letter-spacing: -0.02em;
+    }
+
+    .content-section p {
+      margin: 0;
+      color: #475569;
+      line-height: 1.7;
+    }
+
+    .footer {
+      text-align: center;
+      padding: 18px 24px 28px;
+      font-size: 0.95rem;
+      color: #64748b;
+    }
+
+    @media (max-width: 720px) {
+      .topbar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .hero {
+        padding: 32px 24px 20px;
+      }
+      .content {
+        padding: 24px;
+      }
+    }
+  </style>
+  <script type="importmap">
+  {
+    "imports": {
+      "react": "https://esm.sh/react@19",
+      "react-dom": "https://esm.sh/react-dom@19",
+      "react-dom/client": "https://esm.sh/react-dom@19/client",
+      "react/jsx-runtime": "https://esm.sh/react@19/jsx-runtime"
+    }
+  }
+  </script>
+</head>
+<body>
+  <div class="page-shell">
+    <header class="topbar">
+      <div>
+        <h1>OS Security Framework</h1>
+      </div>
+      <div class="tag">Frontend Ready</div>
+    </header>
+
+    <section class="hero">
+      <div>
+        <h2>Secure access control for your OS-level policy demo.</h2>
+        <p>Review subject/object policy checks, run the guard decision engine, and inspect access results directly from the dashboard.</p>
+      </div>
+      <div class="stats">
+        <div class="stat-card">
+          <strong>Bell Model</strong>
+          <span>Enforce no read-up and no write-down</span>
+        </div>
+        <div class="stat-card">
+          <strong>Biba Model</strong>
+          <span>Enforce no read-down and no write-up</span>
+        </div>
+        <div class="stat-card">
+          <strong>Live API</strong>
+          <span>Connects to your backend at <code>localhost:5000</code></span>
+        </div>
+      </div>
+    </section>
+
+    <main class="content">
+      <section class="content-section">
+        <h3>Security Dashboard</h3>
+        <p>This page renders the React dashboard component built from your TypeScript source. The access request form and result display appear below.</p>
+      </section>
+      <section class="content-section">
+        <div id="root"></div>
+      </section>
+    </main>
+  </div>
+  <script type="module" src="./dist/app.js"></script>
+</body>
+</html>

@@ -1,6 +1,8 @@
 import subprocess
 import os
-GUARD_PATH = r"C:\Users\udot\OS-Security-Framework\backend\core\guard.exe"
+
+GUARD_PATH = os.path.join(os.path.dirname(__file__), "guard.exe")
+
 def run_guard(model, s_lvl, o_lvl, action, data, hash_val):
     try:
         result = subprocess.run(
@@ -25,6 +27,6 @@ def run_guard(model, s_lvl, o_lvl, action, data, hash_val):
     except FileNotFoundError:
         return {
             "allowed": False,
-            "error": "guard.exe not found",
+            "error": f"guard.exe not found at {GUARD_PATH}",
             "code": -1
         }
