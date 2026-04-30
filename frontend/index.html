@@ -5,11 +5,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>OS Security Framework</title>
   <style>
+    
     :root {
       color-scheme: light;
-      font-family: Inter, system-ui, sans-serif;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background: #eef2f7;
       color: #111827;
+      line-height: 1.6;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+      font-smooth: always;
+
+      --surface-1: rgba(255, 255, 255, 0.95);
+      --surface-2: rgba(255, 255, 255, 0.82);
+      --surface-border: rgba(148, 163, 184, 0.2);
+      --accent: #2563eb;
+      --accent-soft: rgba(37, 99, 235, 0.12);
+      --accent-strong: #1d4ed8;
+      --text: #111827;
+      --text-muted: #475569;
+      --text-light: #e2e8f0;
+      --shadow: 0 24px 80px rgba(15, 23, 42, 0.1);
+      --radius: 28px;
     }
 
     * {
@@ -19,22 +36,43 @@
     html, body {
       margin: 0;
       min-height: 100%;
-      background: radial-gradient(circle at top, #dbeafe 0%, #f8fafc 40%, #eef2f7 100%);
+      background: radial-gradient(circle at top, #dbeafe 0%, #f8fafc 34%, #eef2f7 100%);
     }
 
     body {
       display: flex;
       justify-content: center;
-      padding: 24px;
+      padding: 32px;
+      overflow-x: hidden;
+    }
+
+    img,
+    svg,
+    video,
+    canvas {
+      display: block;
+      max-width: 100%;
+    }
+
+    button,
+    input,
+    textarea,
+    select {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
     }
 
     .page-shell {
-      width: min(100%, 1180px);
+      width: min(100%, 1240px);
       background: rgba(255, 255, 255, 0.96);
-      border: 1px solid rgba(148, 163, 184, 0.24);
-      border-radius: 32px;
-      box-shadow: 0 28px 80px rgba(15, 23, 42, 0.14);
+      border: 1px solid var(--surface-border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
       overflow: hidden;
+      backdrop-filter: blur(12px);
     }
 
     .topbar {
@@ -42,117 +80,664 @@
       align-items: center;
       justify-content: space-between;
       gap: 16px;
-      padding: 24px 32px;
-      background: #0f172a;
+      padding: 24px 34px;
+      background: linear-gradient(90deg, #0f172a 0%, #111827 100%);
       color: #f8fafc;
     }
 
-    .topbar h1 {
-      margin: 0;
-      font-size: 1.35rem;
-      letter-spacing: -0.03em;
+    .brand {
+      display: grid;
+      gap: 8px;
     }
 
-    .topbar .tag {
-      padding: 8px 14px;
-      background: rgba(255, 255, 255, 0.12);
+    .brand h1 {
+      margin: 0;
+      font-size: 1.55rem;
+      letter-spacing: -0.04em;
+    }
+
+    .brand p {
+      margin: 0;
+      color: #cbd5e1;
+      font-size: 0.95rem;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 16px;
       border-radius: 999px;
-      font-size: 0.9rem;
-      color: #e2e8f0;
+      border: 1px solid rgba(255,255,255,0.18);
+      background: rgba(255,255,255,0.08);
+      font-size: 0.95rem;
+      color: #eff6ff;
+      white-space: nowrap;
+    }
+
+    .site-nav {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .site-nav a {
+      color: #cbd5e1;
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: color 180ms ease, transform 180ms ease;
+    }
+
+    .site-nav a:hover,
+    .site-nav a:focus-visible {
+      color: #ffffff;
+      transform: translateY(-1px);
     }
 
     .hero {
+      position: relative;
       display: grid;
-      gap: 22px;
-      padding: 40px 32px 24px;
-      background: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%);
+      gap: 28px;
+      padding: 54px 46px 40px;
+      background: radial-gradient(circle at top left, rgba(59, 130, 246, 0.2), transparent 34%),
+                  radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.14), transparent 28%),
+                  linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%);
       color: #f8fafc;
+      overflow: hidden;
     }
 
-    .hero h2 {
-      margin: 0;
-      font-size: clamp(2rem, 4vw, 3rem);
-      line-height: 1.05;
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(circle at 20% 10%, rgba(255,255,255,0.12), transparent 16%),
+                        radial-gradient(circle at 85% 20%, rgba(56, 189, 248, 0.1), transparent 14%);
+      pointer-events: none;
     }
 
-    .hero p {
-      margin: 0;
-      max-width: 700px;
-      font-size: 1rem;
-      letter-spacing: -0.01em;
-      color: #cbd5e1;
-    }
-
-    .hero .stats {
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 720px;
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 16px;
+      gap: 20px;
     }
 
-    .stat-card {
-      padding: 20px;
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.16);
+      font-size: 0.88rem;
+      letter-spacing: 0.02em;
+      color: #dbeafe;
+      width: fit-content;
+    }
+
+    .hero-title {
+      margin: 0;
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      line-height: 1.02;
+      letter-spacing: -0.035em;
+    }
+
+    .hero-copy {
+      margin: 0;
+      color: #cbd5e1;
+      font-size: 1.05rem;
+      max-width: 680px;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    .hero-actions a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 52px;
+      padding: 0 22px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      text-decoration: none;
+      font-weight: 600;
+      transition: transform 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
+    }
+
+    .hero-actions a.primary {
+      background: #3b82f6;
+      color: #ffffff;
+      box-shadow: 0 18px 40px rgba(59, 130, 246, 0.22);
+    }
+
+    .hero-actions a.primary:hover,
+    .hero-actions a.primary:focus-visible {
+      transform: translateY(-2px);
+      background: #2563eb;
+    }
+
+    .hero-actions a.secondary {
+      color: #dbeafe;
+      border-color: rgba(255,255,255,0.25);
+    }
+
+    .hero-actions a.secondary:hover,
+    .hero-actions a.secondary:focus-visible {
+      color: #ffffff;
+      border-color: rgba(255,255,255,0.4);
+    }
+
+    .hero-meta {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      margin-top: 10px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 18px;
       border-radius: 20px;
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(148, 163, 184, 0.16);
-    }
-
-    .stat-card strong {
-      display: block;
-      font-size: 1.55rem;
-      margin-bottom: 6px;
-      color: #f8fafc;
-    }
-
-    .stat-card span {
-      color: #cbd5e1;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: #e2e8f0;
       font-size: 0.95rem;
     }
 
-    .content {
+    .hero-chip strong {
+      color: #ffffff;
+      font-size: 1.08rem;
+      line-height: 1.1;
+    }
+
+    .hero-visual {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      align-items: center;
+      justify-items: center;
+      min-height: 420px;
+      border-radius: 34px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.14);
+      padding: 28px;
+      overflow: hidden;
+    }
+
+    .hero-visual::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top left, rgba(59, 130, 246, 0.22), transparent 22%),
+                  radial-gradient(circle at bottom right, rgba(96, 165, 250, 0.12), transparent 25%);
+      pointer-events: none;
+    }
+
+    .hero-visual-scene {
+      position: relative;
+      width: 100%;
+      max-width: 560px;
+      min-height: 320px;
+      display: grid;
+      place-items: center;
+      padding: 16px;
+      perspective: 1300px;
+    }
+
+    .cube {
+      width: 240px;
+      height: 240px;
+      position: relative;
+      transform-style: preserve-3d;
+      animation: cube-rotate 12s linear infinite;
+    }
+
+    .cube-face {
+      position: absolute;
+      inset: auto;
+      width: 220px;
+      height: 220px;
+      border-radius: 24px;
+      border: 1px solid rgba(255,255,255,0.2);
+      background: rgba(59, 130, 246, 0.92);
+      box-shadow: 0 30px 60px rgba(15, 23, 42, 0.18);
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 18px;
+      color: #f8fafc;
+      font-weight: 700;
+      line-height: 1.2;
+      mix-blend-mode: screen;
+    }
+
+    .cube-face span {
+      display: block;
+      font-size: 0.82rem;
+      opacity: 0.85;
+      margin-bottom: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .face-front { transform: rotateY(0deg) translateZ(120px); }
+    .face-back { transform: rotateY(180deg) translateZ(120px); }
+    .face-right { transform: rotateY(90deg) translateZ(120px); }
+    .face-left { transform: rotateY(-90deg) translateZ(120px); }
+    .face-top { transform: rotateX(90deg) translateZ(120px); }
+    .face-bottom { transform: rotateX(-90deg) translateZ(120px); }
+
+    @keyframes cube-rotate {
+      0% { transform: rotateX(14deg) rotateY(0deg); }
+      100% { transform: rotateX(14deg) rotateY(360deg); }
+    }
+
+    .hero-visual-grid {
+      display: grid;
+      gap: 18px;
+      width: 100%;
+      max-width: 880px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .visual-card {
+      border-radius: 24px;
+      background: rgba(15, 23, 42, 0.72);
+      border: 1px solid rgba(255,255,255,0.12);
+      padding: 18px;
+      min-height: 120px;
+      display: grid;
+      gap: 12px;
+      align-items: start;
+      color: #e2e8f0;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03);
+    }
+
+    .visual-card h4 {
+      margin: 0;
+      font-size: 1rem;
+      color: #fff;
+    }
+
+    .visual-card p {
+      margin: 0;
+      color: #cbd5e1;
+      font-size: 0.92rem;
+      line-height: 1.5;
+    }
+
+    .section-surface {
+      padding: 34px 42px;
+      background: linear-gradient(180deg, rgba(248,250,252,0.92) 0%, rgba(255,255,255,0.98) 100%);
+      border-bottom: 1px solid rgba(148,163,184,0.14);
+    }
+
+    .introduction,
+    .feature-wall,
+    .workflow,
+    .dashboard-preview,
+    .api-integration,
+    .faq-section,
+    .resource-hub {
       display: grid;
       gap: 28px;
-      padding: 32px;
     }
 
-    .content-section {
-      padding: 28px;
-      border-radius: 24px;
-      background: #ffffff;
-      border: 1px solid rgba(148, 163, 184, 0.16);
+    .section-header {
+      display: grid;
+      gap: 12px;
+      max-width: 760px;
     }
 
-    .content-section h3 {
-      margin: 0 0 12px;
-      font-size: 1.25rem;
-      letter-spacing: -0.02em;
-    }
-
-    .content-section p {
+    .section-header h2 {
       margin: 0;
+      font-size: clamp(2rem, 3vw, 2.8rem);
+      letter-spacing: -0.03em;
+      color: var(--text);
+    }
+
+    .section-header p {
+      margin: 0;
+      color: var(--text-muted);
+      font-size: 1rem;
+      line-height: 1.8;
+    }
+
+    .highlight-bar {
+      width: 56px;
+      height: 6px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #38bdf8, #2563eb);
+    }
+
+    .stat-grid {
+      display: grid;
+      gap: 18px;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    }
+
+    .feature-card-large,
+    .feature-tile,
+    .faq-card,
+    .resource-card {
+      border-radius: 26px;
+      background: var(--surface-1);
+      border: 1px solid var(--surface-border);
+      box-shadow: 0 14px 36px rgba(15, 23, 42, 0.08);
+      padding: 26px;
+    }
+
+    .feature-card-large h3,
+    .feature-tile h3,
+    .faq-card h3,
+    .resource-card h3 {
+      margin: 0 0 12px;
+      font-size: 1.2rem;
+      color: var(--text);
+    }
+
+    .feature-card-large p,
+    .feature-tile p,
+    .faq-card p,
+    .resource-card p {
+      margin: 0;
+      color: var(--text-muted);
+      line-height: 1.75;
+      font-size: 0.97rem;
+    }
+
+    .mini-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 34px;
+      padding: 0 14px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 0.9rem;
+      letter-spacing: 0.01em;
+      margin-bottom: 16px;
+      width: fit-content;
+    }
+
+    .insight-grid {
+      display: grid;
+      gap: 18px;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    }
+
+    .insight-card {
+      display: grid;
+      gap: 10px;
+      padding: 22px;
+      border-radius: 22px;
+      background: rgba(56, 189, 248, 0.08);
+      border: 1px solid rgba(56, 189, 248, 0.16);
+      color: #0f172a;
+    }
+
+    .insight-card strong {
+      font-size: 1.4rem;
+      color: #0f172a;
+    }
+
+    .dashboard-preview {
+      display: grid;
+      gap: 24px;
+      padding: 0;
+    }
+
+    .preview-shell {
+      display: grid;
+      gap: 0;
+      border-radius: 32px;
+      overflow: hidden;
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      box-shadow: 0 20px 48px rgba(15, 23, 42, 0.08);
+      background: #ffffff;
+    }
+
+    .preview-panel {
+      display: grid;
+      gap: 0;
+    }
+
+    .preview-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 24px 28px;
+      background: #f8fafc;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+    }
+
+    .preview-header h3 {
+      margin: 0;
+      font-size: 1.2rem;
+      color: var(--text);
+    }
+
+    .preview-header span {
       color: #475569;
+      font-size: 0.95rem;
+    }
+
+    .preview-content {
+      min-height: 520px;
+      display: grid;
+      align-items: stretch;
+      padding: 28px;
+      background: #ffffff;
+    }
+
+    .preview-content #root {
+      width: 100%;
+      height: 100%;
+      min-height: 380px;
+      border-radius: 24px;
+      background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+      border: 1px solid rgba(148, 163, 184, 0.16);
+      padding: 24px;
+      display: grid;
+      place-items: center;
+      color: #64748b;
+      font-size: 1rem;
+    }
+
+    .api-integration {
+      display: grid;
+      gap: 26px;
+    }
+
+    .code-block {
+      position: relative;
+      overflow: auto;
+      padding: 24px;
+      border-radius: 26px;
+      background: #0f172a;
+      color: #e2e8f0;
+      font-family: "Fira Code", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.95rem;
       line-height: 1.7;
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.02);
+    }
+
+    .code-block::before {
+      content: "API Playground";
+      position: absolute;
+      top: 16px;
+      left: 20px;
+      font-size: 0.8rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(203, 213, 225, 0.68);
+    }
+
+    .code-line {
+      display: block;
+      white-space: pre;
+    }
+
+    .faq-grid {
+      display: grid;
+      gap: 18px;
+    }
+
+    .faq-card {
+      overflow: hidden;
+    }
+
+    .faq-card summary {
+      list-style: none;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+      cursor: pointer;
+      padding: 18px 0;
+      display: grid;
+      gap: 10px;
+    }
+
+    .faq-card summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .faq-card summary::after {
+      content: "+";
+      justify-self: end;
+      font-size: 1.2rem;
+      color: var(--accent);
+    }
+
+    .faq-card[open] summary::after {
+      content: "–";
+    }
+
+    .faq-card div {
+      padding: 0 0 18px;
+      color: var(--text-muted);
+      font-size: 0.96rem;
+      line-height: 1.75;
+    }
+
+    .resource-grid {
+      display: grid;
+      gap: 18px;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    }
+
+    .resource-card a {
+      display: inline-flex;
+      margin-top: 18px;
+      color: var(--accent-strong);
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 180ms ease;
+    }
+
+    .resource-card a:hover,
+    .resource-card a:focus-visible {
+      color: #1e40af;
+    }
+
+    .divider {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, rgba(226, 232, 240, 0), rgba(148, 163, 184, 0.45), rgba(226, 232, 240, 0));
+      border: none;
+      margin: 0;
     }
 
     .footer {
-      text-align: center;
-      padding: 18px 24px 28px;
-      font-size: 0.95rem;
+      display: grid;
+      gap: 14px;
+      padding: 28px 40px 34px;
       color: #64748b;
+      font-size: 0.95rem;
+      text-align: center;
     }
 
-    @media (max-width: 720px) {
+    .footer a {
+      color: inherit;
+      text-decoration: underline;
+    }
+
+    @media (max-width: 1080px) {
       .topbar {
         flex-direction: column;
         align-items: flex-start;
       }
       .hero {
-        padding: 32px 24px 20px;
+        padding: 40px 28px 32px;
       }
-      .content {
-        padding: 24px;
+      .page-shell {
+        width: min(100%, 1020px);
+      }
+    }
+
+    @media (max-width: 720px) {
+      body {
+        padding: 18px;
+      }
+      .topbar,
+      .section-surface,
+      .footer {
+        padding-left: 22px;
+        padding-right: 22px;
+      }
+      .hero {
+        padding: 30px 22px 26px;
+        gap: 20px;
+      }
+      .hero-content {
+        max-width: 100%;
+      }
+      .hero-actions {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .hero-actions a {
+        width: 100%;
+      }
+      .hero-visual {
+        min-height: 300px;
+      }
+      .hero-visual-grid {
+        grid-template-columns: 1fr;
+      }
+      .stat-grid,
+      .insight-grid,
+      .resource-grid,
+      .faq-grid {
+        grid-template-columns: 1fr;
+      }
+      .preview-content {
+        padding: 20px;
+      }
+      .preview-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .section-header h2 {
+        font-size: 2rem;
       }
     }
   </style>
+
   <script type="importmap">
   {
     "imports": {
@@ -167,43 +752,276 @@
 <body>
   <div class="page-shell">
     <header class="topbar">
-      <div>
+      <div class="brand">
         <h1>OS Security Framework</h1>
+        <p>Modern OS access control simulation for confidentiality and integrity enforcement.</p>
       </div>
-      <div class="tag">Frontend Ready</div>
+      <div class="site-nav">
+        <a href="#overview">Overview</a>
+        <a href="#features">Features</a>
+        <a href="#preview">Dashboard</a>
+        <a href="#api">API</a>
+        <a href="#faq">FAQ</a>
+      </div>
     </header>
 
     <section class="hero">
-      <div>
-        <h2>Secure access control for your OS-level policy demo.</h2>
-        <p>Review subject/object policy checks, run the guard decision engine, and inspect access results directly from the dashboard.</p>
+      <div class="hero-content">
+        <span class="eyebrow">Security Lab</span>
+        <h1 class="hero-title">Run OS-level policy checks with a stunning interactive dashboard.</h1>
+        <p class="hero-copy">Simulate subject/object access rules with Bell LaPadula and Biba models, review allowed or denied decisions, and inspect the policy path that produced each result.</p>
+        <div class="hero-actions">
+          <a class="primary" href="#preview">Open Dashboard</a>
+          <a class="secondary" href="#api">View API</a>
+        </div>
+        <div class="hero-meta">
+          <span class="hero-chip"><strong>Live demo</strong> Real-time guard evaluation</span>
+          <span class="hero-chip"><strong>Zero install</strong> Pure browser landing page</span>
+          <span class="hero-chip"><strong>Secure by design</strong> Policy-first validation</span>
+        </div>
       </div>
-      <div class="stats">
-        <div class="stat-card">
-          <strong>Bell Model</strong>
-          <span>Enforce no read-up and no write-down</span>
+
+      <div class="hero-visual" aria-hidden="true">
+        <div class="hero-visual-scene">
+          <div class="cube">
+            <div class="cube-face face-front"><span>Live dashboard</span>OS security status</div>
+            <div class="cube-face face-right"><span>Policy</span>Bell / Biba</div>
+            <div class="cube-face face-left"><span>Action</span>Read / Write</div>
+            <div class="cube-face face-top"><span>Subjects</span>alice, bob</div>
+            <div class="cube-face face-bottom"><span>Result</span>Allow / Deny</div>
+          </div>
         </div>
-        <div class="stat-card">
-          <strong>Biba Model</strong>
-          <span>Enforce no read-down and no write-up</span>
-        </div>
-        <div class="stat-card">
-          <strong>Live API</strong>
-          <span>Connects to your backend at <code>localhost:5000</code></span>
+        <div class="hero-visual-grid">
+          <div class="visual-card">
+            <h4>Live 3D preview</h4>
+            <p>Dynamic dashboard visuals show the access decision path and status in a polished 3D presentation.</p>
+          </div>
+          <div class="visual-card">
+            <h4>Real-time changes</h4>
+            <p>Selection updates animate instantly in the dashboard, making policy behavior clear and immediate.</p>
+          </div>
+          <div class="visual-card">
+            <h4>Interactive demo</h4>
+            <p>The React mount loads the active dashboard here and reflects live backend policy evaluation.</p>
+          </div>
         </div>
       </div>
     </section>
 
-    <main class="content">
-      <section class="content-section">
-        <h3>Security Dashboard</h3>
-        <p>This page renders the React dashboard component built from your TypeScript source. The access request form and result display appear below.</p>
-      </section>
-      <section class="content-section">
-        <div id="root"></div>
-      </section>
-    </main>
+    <section class="section-surface introduction" id="overview">
+      <div class="section-header">
+        <div class="highlight-bar"></div>
+        <h2>Why this framework stands out</h2>
+        <p>The OS Security Framework gives developers and security teams a polished interface for exploring information flow policies, verifying subject-object protection, and verifying access decisions with audit-friendly detail.</p>
+      </div>
+
+      <div class="stat-grid">
+        <div class="feature-tile">
+          <span class="mini-badge">Confidentiality</span>
+          <h3>Bell LaPadula model</h3>
+          <p>Preserve data confidentiality by blocking unauthorized reads and writes using classical no read-up / no write-down enforcement.</p>
+        </div>
+        <div class="feature-tile">
+          <span class="mini-badge">Integrity</span>
+          <h3>Biba model</h3>
+          <p>Protect data integrity through integrity-level enforcement, ensuring subjects cannot compromise objects below or above their trust boundary.</p>
+        </div>
+        <div class="feature-tile">
+          <span class="mini-badge">Usability</span>
+          <h3>Modern interface</h3>
+          <p>Designed as a clean, responsive web experience with clear status panels, form controls, and guided result interpretation.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-surface feature-wall" id="features">
+      <div class="section-header">
+        <div class="highlight-bar"></div>
+        <h2>Designed for learning, testing, and demos</h2>
+        <p>From classroom exercises to proof-of-concept security evaluations, this page gives you the interface and context needed to validate OS-level access controls with confidence.</p>
+      </div>
+
+      <div class="insight-grid">
+        <div class="insight-card">
+          <strong>01</strong>
+          <p>Interactive subject and object selection lets users test any access scenario quickly and compare model outcomes side by side.</p>
+        </div>
+        <div class="insight-card">
+          <strong>02</strong>
+          <p>Clear policy explanation reveals the exact rule path that determined whether a request was allowed or denied.</p>
+        </div>
+        <div class="insight-card">
+          <strong>03</strong>
+          <p>Built-in support for both Bell and Biba controls makes this demo suitable for confidentiality and integrity-focused studies.</p>
+        </div>
+        <div class="insight-card">
+          <strong>04</strong>
+          <p>Backend-ready design ensures the dashboard can connect to your Python service and evaluate requests in real time.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-surface workflow">
+      <div class="section-header">
+        <div class="highlight-bar"></div>
+        <h2>Interactive workflow</h2>
+        <p>The page guides users through four core steps: choose a model, configure the access request, evaluate the decision, and review the policy results.</p>
+      </div>
+
+      <div class="stat-grid">
+        <div class="feature-tile">
+          <span class="mini-badge">Step 1</span>
+          <h3>Select a security model</h3>
+          <p>Pick between Bell LaPadula and Biba and instantly see how the chosen model affects access permissions.</p>
+        </div>
+        <div class="feature-tile">
+          <span class="mini-badge">Step 2</span>
+          <h3>Configure subjects and objects</h3>
+          <p>Define subjects, objects, labels, and requested operations to build real access scenarios.</p>
+        </div>
+        <div class="feature-tile">
+          <span class="mini-badge">Step 3</span>
+          <h3>Run the decision engine</h3>
+          <p>Submit requests to the backend and receive immediate allow/deny outcomes with policy details.</p>
+        </div>
+        <div class="feature-tile">
+          <span class="mini-badge">Step 4</span>
+          <h3>Interpret results</h3>
+          <p>Review why a request was approved or blocked, then use the insights to refine policy design or test edge cases.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-surface dashboard-preview" id="preview">
+      <div class="section-header">
+        <div class="highlight-bar"></div>
+        <h2>Live 3D dashboard preview</h2>
+        <p>The dashboard area below is the actual React mount target for your live 3D access control demo. It showcases the interactive model, policy state, and real-time decision cube.</p>
+      </div>
+
+      <div class="preview-shell">
+        <div class="preview-panel">
+          <div class="preview-header">
+            <h3>Security dashboard</h3>
+            <span>React application mount target</span>
+          </div>
+          <div class="preview-content">
+            <div id="root">
+              <p>Live 3D dashboard will appear here once the React app loads.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-surface api-integration" id="api">
+      <div class="section-header">
+        <div class="highlight-bar"></div>
+        <h2>API integration</h2>
+        <p>The front-end can connect to your Python backend and expose live policy decisioning. Use this sample request body to verify the API contract.</p>
+      </div>
+
+      <div class="code-block" aria-label="Sample API request">
+        <span class="code-line">POST http://localhost:5000/evaluate</span>
+        <span class="code-line"></span>
+        <span class="code-line">{</span>
+        <span class="code-line">  "subject": "alice",</span>
+        <span class="code-line">  "object": "confidential-report",</span>
+        <span class="code-line">  "operation": "read",</span>
+        <span class="code-line">  "policy": "bell-lapadula"</span>
+        <span class="code-line">}</span>
+        <span class="code-line"></span>
+        <span class="code-line">Response:</span>
+        <span class="code-line">{</span>
+        <span class="code-line">  "decision": "deny",</span>
+        <span class="code-line">  "reason": "no read-up rule violated",</span>
+        <span class="code-line">  "details": {</span>
+        <span class="code-line">    "subjectLevel": "secret",</span>
+        <span class="code-line">    "objectLevel": "top-secret",</span>
+        <span class="code-line">    "model": "bell-lapadula"</span>
+        <span class="code-line">  }</span>
+        <span class="code-line">}</span>
+      </div>
+    </section>
+
+    <section class="section-surface faq-section" id="faq">
+      <div class="section-header">
+        <div class="highlight-bar"></div>
+        <h2>Frequently asked questions</h2>
+        <p>Answers to common questions about how the OS Security Framework works and how to extend it for your security exercises.</p>
+      </div>
+
+      <div class="faq-grid">
+        <details class="faq-card">
+          <summary>What is the Bell LaPadula model?</summary>
+          <div>The Bell LaPadula model focuses on preserving confidentiality. It prevents subjects from reading data at a higher security level and from writing data to a lower security level.</div>
+        </details>
+        <details class="faq-card">
+          <summary>What is the Biba model?</summary>
+          <div>The Biba model is centered on integrity. It ensures subjects cannot write to objects with higher integrity or read from objects with lower integrity than their own.</div>
+        </details>
+        <details class="faq-card">
+          <summary>How do subjects and objects map to OS entities?</summary>
+          <div>Subjects typically represent users or processes, while objects represent files, resources, or data containers. The framework assigns security labels to both and evaluates access accordingly.</div>
+        </details>
+        <details class="faq-card">
+          <summary>Can I extend the dashboard with custom models?</summary>
+          <div>Yes. The React app is modular, allowing you to add additional models or policy rules. The landing page is built to support backend-driven decision logic and extra UI components.</div>
+        </details>
+        <details class="faq-card">
+          <summary>Does the dashboard work on mobile?</summary>
+          <div>The page is fully responsive, with adaptative layouts and touch-friendly navigation. The preview and content sections resize for smaller screens.</div>
+        </details>
+        <details class="faq-card">
+          <summary>How do I connect to the backend?</summary>
+          <div>Update the data service in your React app to point at the Python API endpoint. The UI can then fetch decisions, policy details, and alerts from the backend.</div>
+        </details>
+        <details class="faq-card">
+          <summary>What is the root element for React?</summary>
+          <div>The React application mounts into the element with <code>id="root"</code> inside the preview card. This keeps the landing page and dynamic app together.</div>
+        </details>
+        <details class="faq-card">
+          <summary>Can this demo help with security training?</summary>
+          <div>Absolutely. The interface is designed for teaching security concepts, demonstrating mandatory access control, and helping teams understand why requests are accepted or rejected.</div>
+        </details>
+      </div>
+    </section>
+
+    <section class="section-surface resource-hub">
+      <div class="section-header">
+        <div class="highlight-bar"></div>
+        <h2>More resources</h2>
+        <p>Use these links to explore related documentation, inspect the project source, or learn more about mandatory access control models.</p>
+      </div>
+
+      <div class="resource-grid">
+        <div class="resource-card">
+          <h3>Project README</h3>
+          <p>See setup instructions, backend details, and the overall architecture of the OS Security Framework repository.</p>
+          <a href="#">Open README</a>
+        </div>
+        <div class="resource-card">
+          <h3>Backend API</h3>
+          <p>Review the Python API contract and endpoints used by the dashboard to evaluate policy decisions and return structured results.</p>
+          <a href="#">View API details</a>
+        </div>
+        <div class="resource-card">
+          <h3>Security models</h3>
+          <p>Understand the difference between confidentiality and integrity controls, and how Bell LaPadula and Biba apply to OS-level access control.</p>
+          <a href="#">Learn more</a>
+        </div>
+      </div>
+    </section>
+
+    <hr class="divider" />
+
+    <footer class="footer">
+      <div>OS Security Framework landing page—an interactive education and evaluation experience for access control demos.</div>
+      <div>Built for security teams, instructors, and developers working with OS policy models.</div>
+      <div>Need help? <a href="#">Contact support</a> or inspect <code>frontend/app.tsx</code> for the React dashboard entry.</div>
+    </footer>
   </div>
+
   <script type="module" src="./dist/app.js"></script>
 </body>
 </html>

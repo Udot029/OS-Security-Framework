@@ -1,25 +1,174 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { checkAccess } from "../services/api_service.ts";
 import { AccessCheckRequest, AccessCheckResponse } from "../type/type.ts";
 
 const SUBJECTS = ["alice", "bob"];
 const FILES = ["file1", "file2"];
 const ACTIONS = ["read", "write"] as const;
+const POLICIES = [
+  { id: "bell", label: "Bell LaPadula", description: "Confidentiality model with no read-up and no write-down enforcement." },
+  { id: "biba", label: "Biba", description: "Integrity model with no read-down and no write-up enforcement." },
+] as const;
+
+const SUBJECT_LEVELS: Record<string, number> = {
+  alice: 3,
+  bob: 1,
+};
+
+const OBJECT_LEVELS: Record<string, number> = {
+  file1: 2,
+  file2: 1,
+};
 
 type ActionType = typeof ACTIONS[number];
+type PolicyType = typeof POLICIES[number]["id"];
+
+const containerStyle: React.CSSProperties = {
+  display: "grid",
+  gap: 24,
+  padding: 28,
+  borderRadius: 32,
+  background: "#ffffff",
+  border: "1px solid rgba(148, 163, 184, 0.16)",
+  boxShadow: "0 24px 48px rgba(15, 23, 42, 0.08)",
+};
+
+const gridStyle: React.CSSProperties = {
+  display: "grid",
+  gap: 24,
+  gridTemplateColumns: "1.8fr 1fr",
+};
+
+const cardStyle: React.CSSProperties = {
+  borderRadius: 24,
+  background: "#f8fbff",
+  padding: 20,
+  border: "1px solid rgba(56, 189, 248, 0.15)",
+};
+
+const inputStyle: React.CSSProperties = {
+  width: "100%",
+  marginTop: 10,
+  padding: "14px 14px",
+  borderRadius: 14,
+  border: "1px solid rgba(148, 163, 184, 0.24)",
+  background: "#ffffff",
+};
+
+const buttonStyle: React.CSSProperties = {
+  width: "100%",
+  padding: "14px 18px",
+  borderRadius: 14,
+  border: "none",
+  background: "#2563eb",
+  color: "white",
+  fontWeight: 700,
+  letterSpacing: "0.01em",
+};
+
+const simulationSceneStyle: React.CSSProperties = {
+  perspective: "1200px",
+  width: "100%",
+  minHeight: 320,
+  display: "grid",
+  placeItems: "center",
+};
+
+const simulationCubeStyle: React.CSSProperties = {
+  position: "relative",
+  width: 240,
+  height: 240,
+  transformStyle: "preserve-3d",
+  transition: "transform 0.7s ease",
+};
+
+const simulationFaceStyle: React.CSSProperties = {
+  position: "absolute",
+  width: 220,
+  height: 220,
+  borderRadius: 24,
+  border: "1px solid rgba(255,255,255,0.18)",
+  display: "grid",
+  placeItems: "center",
+  textAlign: "center",
+  padding: 18,
+  boxSizing: "border-box",
+  color: "white",
+  fontWeight: 700,
+  boxShadow: "0 24px 42px rgba(15, 23, 42, 0.16)",
+};
+
+const simulationLabelStyle: React.CSSProperties = {
+  fontSize: "0.95rem",
+  margin: "0 0 10px",
+  opacity: 0.85,
+};
+
+const simulationValueStyle: React.CSSProperties = {
+  margin: 0,
+  fontSize: "1.35rem",
+  lineHeight: 1.1,
+};
 
 export default function SecurityDashboard() {
   const [user, setUser] = useState<string>(SUBJECTS[0]);
   const [file, setFile] = useState<string>(FILES[0]);
   const [action, setAction] = useState<ActionType>(ACTIONS[0]);
+  const [policy, setPolicy] = useState<PolicyType>(POLICIES[0].id);
+  const [cubeRotation, setCubeRotation] = useState(0);
   const [response, setResponse] = useState<AccessCheckResponse | null>(null);
+  const [history, setHistory] = useState<AccessCheckResponse[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>("");
+  const [backendStatus, setBackendStatus] = useState<"loading" | "connected" | "disconnected">("loading");
 
   const requestPayload: AccessCheckRequest = useMemo(
-    () => ({ user, file, action }),
-    [user, file, action]
+    () => ({ user, file, action, policy }),
+    [user, file, action, policy]
   );
+
+  const liveSimulation = useMemo(() => {
+    const sLvl = SUBJECT_LEVELS[user] ?? 0;
+    const oLvl = OBJECT_LEVELS[file] ?? 0;
+    let allowed = false;
+    let reason = "";
+
+    if (policy === "bell") {
+      if (action === "read") {
+        allowed = sLvl >= oLvl;
+        reason = allowed ? "Allowed: subject can read at or below its clearance." : "Denied: Bell no read-up rule violated.";
+      } else {
+        allowed = sLvl <= oLvl;
+        reason = allowed ? "Allowed: subject can write at or above its clearance." : "Denied: Bell no write-down rule violated.";
+      }
+    } else {
+      if (action === "read") {
+        allowed = sLvl <= oLvl;
+        reason = allowed ? "Allowed: subject can read at or above its integrity." : "Denied: Biba no read-down rule violated.";
+      } else {
+        allowed = sLvl >= oLvl;
+        reason = allowed ? "Allowed: subject can write at or below its integrity." : "Denied: Biba no write-up rule violated.";
+      }
+    }
+
+    return { allowed, reason, sLvl, oLvl };
+  }, [user, file, action, policy]);
+
+  useEffect(() => {
+    setCubeRotation((prev) => prev + 72);
+  }, [user, file, action, policy]);
+
+  const simulationColor = liveSimulation.allowed ? "#0f766e" : "#881337";
+  const cubeTransform = `rotateX(${18 + liveSimulation.sLvl * 7}deg) rotateY(${36 + liveSimulation.oLvl * 12 + cubeRotation}deg) rotateZ(${action === "read" ? 6 : -6}deg)`;
+
+  async function checkBackendStatus() {
+    try {
+      const res = await fetch("http://localhost:5000/status");
+      setBackendStatus(res.ok ? "connected" : "disconnected");
+    } catch {
+      setBackendStatus("disconnected");
+    }
+  }
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -30,76 +179,242 @@ export default function SecurityDashboard() {
     try {
       const result = await checkAccess(requestPayload);
       setResponse(result);
+      setHistory((prev) => [result, ...prev].slice(0, 5));
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
     } finally {
       setLoading(false);
+      checkBackendStatus();
     }
   }
 
+  useEffect(() => {
+    checkBackendStatus();
+  }, []);
+
+  const activePolicy = POLICIES.find((item) => item.id === policy);
+
   return (
-    <div style={{ border: "1px solid #ccc", borderRadius: 12, padding: 24, background: "#fafafa" }}>
-      <h2>Security Dashboard</h2>
-      <form onSubmit={handleSubmit} style={{ display: "grid", gap: 16 }}>
-        <label>
-          Subject
-          <select value={user} onChange={(e) => setUser(e.target.value)} style={{ width: "100%", marginTop: 8, padding: 8 }}>
-            {SUBJECTS.map((subject) => (
-              <option key={subject} value={subject}>
-                {subject}
-              </option>
-            ))}
-          </select>
-        </label>
+    <div style={containerStyle}>
+      <div style={{ display: "grid", gap: 12 }}>
+        <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 12 }}>
+          <span style={{ color: "#2563eb", fontSize: "0.9rem", textTransform: "uppercase", letterSpacing: "0.16em" }}>
+            Policy evaluation
+          </span>
+          <span
+            style={{
+              padding: "10px 14px",
+              borderRadius: 999,
+              background: backendStatus === "connected" ? "#dcfce7" : backendStatus === "loading" ? "#fef3c7" : "#fee2e2",
+              color: backendStatus === "connected" ? "#166534" : backendStatus === "loading" ? "#92400e" : "#991b1b",
+              fontWeight: 700,
+              fontSize: "0.85rem",
+            }}
+          >
+            Backend: {backendStatus === "loading" ? "Checking..." : backendStatus === "connected" ? "Connected" : "Disconnected"}
+          </span>
+        </div>
+        <h2 style={{ margin: 0, fontSize: "2rem", color: "#111827" }}>Realtime OS access control dashboard</h2>
+        <p style={{ margin: 0, color: "#475569", fontSize: "1rem", lineHeight: 1.8 }}>
+          Select a subject, object, action, and security model, then submit the request to see an allow or deny decision from the backend guard.
+        </p>
+      </div>
 
-        <label>
-          Object
-          <select value={file} onChange={(e) => setFile(e.target.value)} style={{ width: "100%", marginTop: 8, padding: 8 }}>
-            {FILES.map((entry) => (
-              <option key={entry} value={entry}>
-                {entry}
-              </option>
-            ))}
-          </select>
-        </label>
+      <div style={gridStyle}>
+        <div style={{ display: "grid", gap: 22 }}>
+          <div style={{ display: "grid", gap: 18 }}>
+            <div style={{ padding: 22, borderRadius: 24, background: "#eff6ff", border: "1px solid rgba(37, 99, 235, 0.16)" }}>
+              <span style={{ display: "inline-flex", alignItems: "center", gap: 8, color: liveSimulation.allowed ? "#164e63" : "#881337", fontWeight: 700 }}>
+                Live simulation: {liveSimulation.allowed ? "Allowed" : "Denied"}
+              </span>
+              <p style={{ margin: "14px 0 0", color: "#0f172a" }}>
+                Policy: <strong>{activePolicy?.label}</strong>
+              </p>
+              <p style={{ margin: "8px 0 0", color: "#475569" }}>
+                Subject level: <strong>{liveSimulation.sLvl}</strong> / Object level: <strong>{liveSimulation.oLvl}</strong>
+              </p>
+              <p style={{ margin: "14px 0 0", color: "#475569" }}>
+                {liveSimulation.reason}
+              </p>
 
-        <label>
-          Action
-          <select value={action} onChange={(e) => setAction(e.target.value as ActionType)} style={{ width: "100%", marginTop: 8, padding: 8 }}>
-            {ACTIONS.map((entry) => (
-              <option key={entry} value={entry}>
-                {entry}
-              </option>
-            ))}
-          </select>
-        </label>
+              <div style={simulationSceneStyle}>
+                <div style={{ ...simulationCubeStyle, width: 300, height: 300, transform: cubeTransform }}>
+                  <div style={{
+                    ...simulationFaceStyle,
+                    width: 240,
+                    height: 240,
+                    background: `linear-gradient(180deg, ${simulationColor} 0%, rgba(15, 23, 42, 0.95) 100%)`,
+                    transform: "rotateY(0deg) translateZ(130px)",
+                  }}>
+                    <div style={simulationLabelStyle}>Live simulation</div>
+                    <p style={simulationValueStyle}>{liveSimulation.allowed ? "Permit" : "Block"}</p>
+                    <p style={{ margin: 0, marginTop: 10, fontSize: "0.95rem", opacity: 0.9 }}>
+                      {user} → {file} / {action} / {activePolicy?.label}
+                    </p>
+                  </div>
+                  <div style={{
+                    ...simulationFaceStyle,
+                    width: 200,
+                    height: 200,
+                    background: "rgba(255,255,255,0.08)",
+                    color: "#cbd5e1",
+                    transform: "rotateY(90deg) translateZ(130px)",
+                    border: "1px solid rgba(255,255,255,0.12)",
+                  }}>
+                    <div style={simulationLabelStyle}>Subject level</div>
+                    <p style={simulationValueStyle}>{liveSimulation.sLvl}</p>
+                  </div>
+                  <div style={{
+                    ...simulationFaceStyle,
+                    width: 200,
+                    height: 200,
+                    background: "rgba(255,255,255,0.08)",
+                    color: "#cbd5e1",
+                    transform: "rotateX(90deg) translateZ(130px)",
+                    border: "1px solid rgba(255,255,255,0.12)",
+                  }}>
+                    <div style={simulationLabelStyle}>Object level</div>
+                    <p style={simulationValueStyle}>{liveSimulation.oLvl}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-        <button type="submit" disabled={loading} style={{ padding: "12px 18px", borderRadius: 8, border: "none", background: "#007bff", color: "white", cursor: loading ? "not-allowed" : "pointer" }}>
-          {loading ? "Checking..." : "Check Access"}
-        </button>
-      </form>
+            <form onSubmit={handleSubmit} style={{ display: "grid", gap: 18 }}>
+              <label style={{ display: "grid", gap: 8, color: "#0f172a", fontWeight: 600 }}>
+                Subject
+                <select value={user} onChange={(e) => setUser(e.target.value)} style={inputStyle}>
+                  {SUBJECTS.map((subject) => (
+                    <option key={subject} value={subject}>
+                      {subject}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label style={{ display: "grid", gap: 8, color: "#0f172a", fontWeight: 600 }}>
+                Object
+                <select value={file} onChange={(e) => setFile(e.target.value)} style={inputStyle}>
+                  {FILES.map((entry) => (
+                    <option key={entry} value={entry}>
+                      {entry}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label style={{ display: "grid", gap: 8, color: "#0f172a", fontWeight: 600 }}>
+                Action
+                <select value={action} onChange={(e) => setAction(e.target.value as ActionType)} style={inputStyle}>
+                  {ACTIONS.map((entry) => (
+                    <option key={entry} value={entry}>
+                      {entry}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label style={{ display: "grid", gap: 8, color: "#0f172a", fontWeight: 600 }}>
+                Security model
+                <select value={policy} onChange={(e) => setPolicy(e.target.value as PolicyType)} style={inputStyle}>
+                  {POLICIES.map((entry) => (
+                    <option key={entry.id} value={entry.id}>
+                      {entry.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <button type="submit" disabled={loading} style={{ ...buttonStyle, opacity: loading ? 0.7 : 1 }}>
+                {loading ? "Evaluating policy..." : "Run access check"}
+              </button>
+            </form>
+
+            <div style={cardStyle}>
+              <h3 style={{ margin: "0 0 10px", fontSize: "1.1rem", color: "#0f172a" }}>Selected policy</h3>
+              <p style={{ margin: 0, color: "#475569", lineHeight: 1.7 }}>{activePolicy?.description}</p>
+            </div>
+          </div>
+
+          <div style={cardStyle}>
+            <h3 style={{ margin: 0, color: "#0f172a" }}>Live request summary</h3>
+            <div style={{ marginTop: 18, display: "grid", gap: 14 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
+                <span style={{ color: "#475569" }}>Subject</span>
+                <strong style={{ color: "#111827" }}>{user}</strong>
+              </div>
+              <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
+                <span style={{ color: "#475569" }}>Object</span>
+                <strong style={{ color: "#111827" }}>{file}</strong>
+              </div>
+              <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
+                <span style={{ color: "#475569" }}>Action</span>
+                <strong style={{ color: "#111827" }}>{action}</strong>
+              </div>
+              <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
+                <span style={{ color: "#475569" }}>Model</span>
+                <strong style={{ color: "#111827" }}>{activePolicy?.label}</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {error && (
-        <div style={{ marginTop: 20, color: "#b00020" }}>
+        <div style={{ padding: 20, borderRadius: 22, background: "#ffe4e6", border: "1px solid rgba(191, 90, 242, 0.18)", color: "#991b1b" }}>
           <strong>Error:</strong> {error}
         </div>
       )}
 
       {response && (
-        <div style={{ marginTop: 20, padding: 18, border: "1px solid #ddd", borderRadius: 12, background: "white" }}>
-          <h3>Access Result</h3>
-          <p>
-            <strong>Allowed:</strong> {response.allowed ? "Yes" : "No"}
-          </p>
-          <p>
-            <strong>Guard output:</strong> {response.output || "(none)"}
-          </p>
-          <p>
-            <strong>Error:</strong> {response.error || "(none)"}
-          </p>
-          <p>
-            <strong>Return code:</strong> {response.code}
-          </p>
+        <div style={{ display: "grid", gap: 20, padding: 24, borderRadius: 28, background: "#0f172a", color: "#f8fafc" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16 }}>
+            <div>
+              <span style={{ display: "inline-flex", alignItems: "center", gap: 8, background: response.allowed ? "#1d4ed8" : "#991b1b", padding: "10px 16px", borderRadius: 999, fontWeight: 700 }}>
+                {response.allowed ? "Access allowed" : "Access denied"}
+              </span>
+            </div>
+            <span style={{ color: "#cbd5e1", fontSize: "0.95rem" }}>Return code: {response.code}</span>
+          </div>
+
+          <div style={{ display: "grid", gap: 12 }}>
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <span>Guard output</span>
+              <strong>{response.output || "No output"}</strong>
+            </div>
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <span>Error</span>
+              <strong>{response.error || "None"}</strong>
+            </div>
+          </div>
+
+          <div style={{ display: "grid", gap: 14, padding: 18, borderRadius: 22, background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.12)" }}>
+            <h4 style={{ margin: 0, fontSize: "1rem", color: "#e2e8f0" }}>Request payload</h4>
+            <pre style={{ margin: 0, whiteSpace: "pre-wrap", wordBreak: "break-word", color: "#dbeafe", fontSize: "0.95rem" }}>
+              {JSON.stringify(requestPayload, null, 2)}
+            </pre>
+          </div>
+        </div>
+      )}
+
+      {history.length > 0 && (
+        <div style={cardStyle}>
+          <h3 style={{ margin: "0 0 18px", color: "#0f172a" }}>Recent decision history</h3>
+          <div style={{ display: "grid", gap: 14 }}>
+            {history.map((entry, index) => (
+              <div key={index} style={{ display: "grid", gap: 8, padding: 16, borderRadius: 20, background: "#f8fafc", border: "1px solid rgba(148, 163, 184, 0.16)" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
+                  <span style={{ color: "#475569" }}>Decision {history.length - index}</span>
+                  <strong style={{ color: entry.allowed ? "#185adb" : "#b91c1c" }}>{entry.allowed ? "Allowed" : "Denied"}</strong>
+                </div>
+                <div style={{ display: "grid", gap: 6, color: "#475569", fontSize: "0.94rem" }}>
+                  <div><strong>Output:</strong> {entry.output || "No output"}</div>
+                  <div><strong>Error:</strong> {entry.error || "None"}</div>
+                  <div><strong>Code:</strong> {entry.code}</div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </div>
