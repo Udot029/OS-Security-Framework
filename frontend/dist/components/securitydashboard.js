@@ -1,7 +1,7 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { useEffect, useMemo, useState } from "react";
 import { checkAccess, checkBackendHealth, getBackendConfig } from "../services/api_service.js";
-const SUBJECTS = ["alice", "bob"];
+const SUBJECTS = ["Uday", "Rishu","Anisha", "Kavya", "Rahul", "Sanya", "Aarav", "Diya", "Kabir", "Myra"];
 const FILES = ["file1", "file2"];
 const ACTIONS = ["read", "write"];
 const POLICIES = [
@@ -9,8 +9,16 @@ const POLICIES = [
     { id: "biba", label: "Biba", description: "Integrity model with no read-down and no write-up enforcement." },
 ];
 const SUBJECT_LEVELS = {
-    alice: 3,
-    bob: 1,
+    Uday: 3,
+    Rishu: 1,
+    Anisha: 2,
+    Kavya: 1,
+    Rahul: 2,
+    Sanya: 1,
+    Aarav: 2,
+    Diya: 1,
+    Kabir: 2,
+    Myra: 1,
 };
 const OBJECT_LEVELS = {
     file1: 2,
