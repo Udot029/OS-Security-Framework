@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { checkAccess, checkBackendHealth } from "../services/api_service.ts";
-import { AccessCheckRequest, AccessCheckResponse } from "../type/type.ts";
+import { checkAccess, checkBackendHealth, getBackendConfig } from "../services/api_service.ts";
+import { AccessCheckRequest, AccessCheckResponse, BackendConfig } from "../type/type.ts";
 
 const SUBJECTS = ["alice", "bob"];
 const FILES = ["file1", "file2"];
@@ -18,6 +18,15 @@ const SUBJECT_LEVELS: Record<string, number> = {
 const OBJECT_LEVELS: Record<string, number> = {
   file1: 2,
   file2: 1,
+};
+
+const DEFAULT_BACKEND_CONFIG: BackendConfig = {
+  securityModel: "bell",
+  subjects: SUBJECT_LEVELS,
+  objects: OBJECT_LEVELS,
+  files: FILES,
+  policies: ["bell", "biba"],
+  actions: ["read", "write"],
 };
 
 type ActionType = typeof ACTIONS[number];
@@ -111,6 +120,7 @@ const simulationValueStyle: React.CSSProperties = {
 };
 
 export default function SecurityDashboard() {
+  const [backendConfig, setBackendConfig] = useState<BackendConfig>(DEFAULT_BACKEND_CONFIG);
   const [user, setUser] = useState<string>(SUBJECTS[0]);
   const [file, setFile] = useState<string>(FILES[0]);
   const [action, setAction] = useState<ActionType>(ACTIONS[0]);
@@ -120,6 +130,7 @@ export default function SecurityDashboard() {
   const [history, setHistory] = useState<AccessCheckResponse[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>("");
+  const [lastCheckedAt, setLastCheckedAt] = useState<string>("");
   const [backendStatus, setBackendStatus] = useState<"loading" | "connected" | "disconnected">("loading");
 
   const requestPayload: AccessCheckRequest = useMemo(
@@ -127,9 +138,12 @@ export default function SecurityDashboard() {
     [user, file, action, policy]
   );
 
+  const subjects = useMemo(() => Object.keys(backendConfig.subjects), [backendConfig.subjects]);
+  const files = backendConfig.files;
+
   const liveSimulation = useMemo(() => {
-    const sLvl = SUBJECT_LEVELS[user] ?? 0;
-    const oLvl = OBJECT_LEVELS[file] ?? 0;
+    const sLvl = backendConfig.subjects[user] ?? 0;
+    const oLvl = backendConfig.objects[file] ?? 0;
     let allowed = false;
     let reason = "";
 
@@ -152,7 +166,7 @@ export default function SecurityDashboard() {
     }
 
     return { allowed, reason, sLvl, oLvl };
-  }, [user, file, action, policy]);
+  }, [backendConfig.objects, backendConfig.subjects, user, file, action, policy]);
 
   useEffect(() => {
     setCubeRotation((prev) => prev + 72);
@@ -166,8 +180,32 @@ export default function SecurityDashboard() {
     setBackendStatus(isHealthy ? "connected" : "disconnected");
   }
 
-  async function handleSubmit(event: React.FormEvent) {
-    event.preventDefault();
+  async function loadBackendConfig() {
+    try {
+      const config = await getBackendConfig();
+      setBackendConfig(config);
+      setBackendStatus("connected");
+
+      const nextSubjects = Object.keys(config.subjects);
+      const nextFiles = config.files;
+      if (nextSubjects.length > 0 && !nextSubjects.includes(user)) {
+        setUser(nextSubjects[0]);
+      }
+      if (nextFiles.length > 0 && !nextFiles.includes(file)) {
+        setFile(nextFiles[0]);
+      }
+      if (config.actions.length > 0 && !config.actions.includes(action)) {
+        setAction(config.actions[0]);
+      }
+      if (config.policies.length > 0 && !config.policies.includes(policy)) {
+        setPolicy(config.securityModel);
+      }
+    } catch {
+      setBackendStatus("disconnected");
+    }
+  }
+
+  async function runAccessCheck() {
     setLoading(true);
     setError("");
     setResponse(null);
@@ -175,6 +213,7 @@ export default function SecurityDashboard() {
     try {
       const result = await checkAccess(requestPayload);
       setResponse(result);
+      setLastCheckedAt(new Date().toLocaleTimeString());
       setHistory((prev) => [result, ...prev].slice(0, 5));
       setBackendStatus("connected");
     } catch (err) {
@@ -185,14 +224,20 @@ export default function SecurityDashboard() {
     }
   }
 
+  async function handleSubmit(event: React.FormEvent) {
+    event.preventDefault();
+    await runAccessCheck();
+  }
+
   // Check backend status on mount and periodically
   useEffect(() => {
-    checkBackendStatus();
-    const interval = setInterval(checkBackendStatus, 5000); // Check every 5 seconds
+    loadBackendConfig();
+    const interval = setInterval(checkBackendStatus, 10000);
     return () => clearInterval(interval);
   }, []);
 
   const activePolicy = POLICIES.find((item) => item.id === policy);
+  const availablePolicies = POLICIES.filter((item) => backendConfig.policies.includes(item.id));
 
   return (
     <div style={containerStyle}>
@@ -249,7 +294,7 @@ export default function SecurityDashboard() {
                     <div style={simulationLabelStyle}>Live simulation</div>
                     <p style={simulationValueStyle}>{liveSimulation.allowed ? "Permit" : "Block"}</p>
                     <p style={{ margin: 0, marginTop: 10, fontSize: "0.95rem", opacity: 0.9 }}>
-                      {user} → {file} / {action} / {activePolicy?.label}
+                      {user} to {file} / {action} / {activePolicy?.label}
                     </p>
                   </div>
                   <div style={{
@@ -284,7 +329,7 @@ export default function SecurityDashboard() {
               <label style={{ display: "grid", gap: 8, color: "#0f172a", fontWeight: 600 }}>
                 Subject
                 <select value={user} onChange={(e) => setUser(e.target.value)} style={inputStyle}>
-                  {SUBJECTS.map((subject) => (
+                  {subjects.map((subject) => (
                     <option key={subject} value={subject}>
                       {subject}
                     </option>
@@ -295,7 +340,7 @@ export default function SecurityDashboard() {
               <label style={{ display: "grid", gap: 8, color: "#0f172a", fontWeight: 600 }}>
                 Object
                 <select value={file} onChange={(e) => setFile(e.target.value)} style={inputStyle}>
-                  {FILES.map((entry) => (
+                  {files.map((entry) => (
                     <option key={entry} value={entry}>
                       {entry}
                     </option>
@@ -306,7 +351,7 @@ export default function SecurityDashboard() {
               <label style={{ display: "grid", gap: 8, color: "#0f172a", fontWeight: 600 }}>
                 Action
                 <select value={action} onChange={(e) => setAction(e.target.value as ActionType)} style={inputStyle}>
-                  {ACTIONS.map((entry) => (
+                  {backendConfig.actions.map((entry) => (
                     <option key={entry} value={entry}>
                       {entry}
                     </option>
@@ -317,7 +362,7 @@ export default function SecurityDashboard() {
               <label style={{ display: "grid", gap: 8, color: "#0f172a", fontWeight: 600 }}>
                 Security model
                 <select value={policy} onChange={(e) => setPolicy(e.target.value as PolicyType)} style={inputStyle}>
-                  {POLICIES.map((entry) => (
+                  {availablePolicies.map((entry) => (
                     <option key={entry.id} value={entry.id}>
                       {entry.label}
                     </option>
@@ -325,9 +370,21 @@ export default function SecurityDashboard() {
                 </select>
               </label>
 
-              <button type="submit" disabled={loading} style={{ ...buttonStyle, opacity: loading ? 0.7 : 1 }}>
+              <button
+                type="button"
+                disabled={loading}
+                onClick={runAccessCheck}
+                style={{ ...buttonStyle, opacity: loading ? 0.7 : 1 }}
+              >
                 {loading ? "Evaluating policy..." : "Run access check"}
               </button>
+              <div style={{ minHeight: 24, color: loading ? "#2563eb" : response ? (response.allowed ? "#166534" : "#991b1b") : "#64748b", fontWeight: 700 }}>
+                {loading
+                  ? "Sending request to backend..."
+                  : response
+                    ? `${response.allowed ? "Access allowed" : "Access denied"}${lastCheckedAt ? ` at ${lastCheckedAt}` : ""}`
+                    : "Ready to run access check"}
+              </div>
             </form>
 
             <div style={cardStyle}>
@@ -355,6 +412,18 @@ export default function SecurityDashboard() {
                 <span style={{ color: "#475569" }}>Model</span>
                 <strong style={{ color: "#111827" }}>{activePolicy?.label}</strong>
               </div>
+              <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
+                <span style={{ color: "#475569" }}>Last backend result</span>
+                <strong style={{ color: response ? (response.allowed ? "#166534" : "#991b1b") : "#64748b" }}>
+                  {response ? (response.allowed ? "Allowed" : "Denied") : "Not run"}
+                </strong>
+              </div>
+              {response && (
+                <div style={{ display: "grid", gap: 6, padding: 12, borderRadius: 14, background: "#ffffff", border: "1px solid rgba(148, 163, 184, 0.16)" }}>
+                  <span style={{ color: "#475569" }}>Backend output</span>
+                  <strong style={{ color: "#111827" }}>{response.output || response.error || "No output"}</strong>
+                </div>
+              )}
             </div>
           </div>
         </div>

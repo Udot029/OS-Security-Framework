@@ -2,6 +2,8 @@
 import os
 
 GUARD_PATH = os.path.join(os.path.dirname(__file__), "guard.exe")
+GUARD_TIMEOUT_SECONDS = 2
+USE_NATIVE_GUARD = os.environ.get("USE_NATIVE_GUARD") == "1"
 
 
 def _fallback_decision(model, s_lvl, o_lvl, action, data, hash_val):
@@ -43,6 +45,9 @@ def _fallback_decision(model, s_lvl, o_lvl, action, data, hash_val):
 
 
 def run_guard(model, s_lvl, o_lvl, action, data, hash_val):
+    if not USE_NATIVE_GUARD:
+        return _fallback_decision(model, s_lvl, o_lvl, action, data, hash_val)
+
     if not os.path.isfile(GUARD_PATH) or os.path.getsize(GUARD_PATH) == 0:
         return _fallback_decision(model, s_lvl, o_lvl, action, data, hash_val)
 
@@ -58,14 +63,21 @@ def run_guard(model, s_lvl, o_lvl, action, data, hash_val):
                 str(hash_val)
             ],
             capture_output=True,
-            text=True
+            text=True,
+            timeout=GUARD_TIMEOUT_SECONDS
         )
+
+        if result.stderr.strip() and result.returncode not in (0, 1):
+            return _fallback_decision(model, s_lvl, o_lvl, action, data, hash_val)
+
         return {
             "allowed": result.returncode == 0,
             "output": result.stdout.strip(),
             "error": result.stderr.strip(),
             "code": result.returncode
         }
+    except subprocess.TimeoutExpired:
+        return _fallback_decision(model, s_lvl, o_lvl, action, data, hash_val)
     except FileNotFoundError:
         return {
             "allowed": False,

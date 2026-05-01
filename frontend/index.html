@@ -624,7 +624,7 @@
     }
 
     .faq-card[open] summary::after {
-      content: "–";
+      content: "-";
     }
 
     .faq-card div {
@@ -747,6 +747,9 @@
       "react/jsx-runtime": "https://esm.sh/react@19/jsx-runtime"
     }
   }
+  </script>
+  <script>
+    window.OS_SECURITY_API_BASE = "http://127.0.0.1:5000";
   </script>
 </head>
 <body>
@@ -922,24 +925,21 @@
       </div>
 
       <div class="code-block" aria-label="Sample API request">
-        <span class="code-line">POST http://localhost:5000/evaluate</span>
+        <span class="code-line">POST http://127.0.0.1:5000/check-access</span>
         <span class="code-line"></span>
         <span class="code-line">{</span>
-        <span class="code-line">  "subject": "alice",</span>
-        <span class="code-line">  "object": "confidential-report",</span>
-        <span class="code-line">  "operation": "read",</span>
-        <span class="code-line">  "policy": "bell-lapadula"</span>
+        <span class="code-line">  "user": "alice",</span>
+        <span class="code-line">  "file": "file1",</span>
+        <span class="code-line">  "action": "read",</span>
+        <span class="code-line">  "policy": "bell"</span>
         <span class="code-line">}</span>
         <span class="code-line"></span>
         <span class="code-line">Response:</span>
         <span class="code-line">{</span>
-        <span class="code-line">  "decision": "deny",</span>
-        <span class="code-line">  "reason": "no read-up rule violated",</span>
-        <span class="code-line">  "details": {</span>
-        <span class="code-line">    "subjectLevel": "secret",</span>
-        <span class="code-line">    "objectLevel": "top-secret",</span>
-        <span class="code-line">    "model": "bell-lapadula"</span>
-        <span class="code-line">  }</span>
+        <span class="code-line">  "allowed": true,</span>
+        <span class="code-line">  "output": "allowed",</span>
+        <span class="code-line">  "error": "",</span>
+        <span class="code-line">  "code": 0</span>
         <span class="code-line">}</span>
       </div>
     </section>
@@ -1016,7 +1016,7 @@
     <hr class="divider" />
 
     <footer class="footer">
-      <div>OS Security Framework landing page—an interactive education and evaluation experience for access control demos.</div>
+      <div>OS Security Framework landing page - an interactive education and evaluation experience for access control demos.</div>
       <div>Built for security teams, instructors, and developers working with OS policy models.</div>
       <div>Need help? <a href="#">Contact support</a> or inspect <code>frontend/app.tsx</code> for the React dashboard entry.</div>
     </footer>

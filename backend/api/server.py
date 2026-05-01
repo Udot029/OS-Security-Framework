@@ -22,7 +22,6 @@ logger = logging.getLogger(__name__)
 
 @app.after_request
 def add_headers(response):
-    response.headers["Connection"] = "keep-alive"
     response.headers["Cache-Control"] = "no-cache"
     return response
 
@@ -34,20 +33,38 @@ def home():
 def status():
     return jsonify({"status": "ok", "message": "Backend connected"})
 
+@app.route("/config", methods=["GET"])
+def config():
+    return jsonify({
+        "securityModel": SECURITY_MODEL,
+        "subjects": SUBJECTS,
+        "objects": OBJECTS,
+        "files": list(FILES.keys()),
+        "policies": ["bell", "biba"],
+        "actions": ["read", "write"]
+    })
+
 @app.route("/check-access", methods=["POST", "OPTIONS"])
 def check_access():
     if request.method == "OPTIONS":
         return make_response(jsonify({}), 204)
 
     try:
-        data = request.json
+        data = request.get_json(silent=True) or {}
 
         user = data.get("user")
         file = data.get("file")
         action = data.get("action")
         policy = data.get("policy", SECURITY_MODEL)
 
-        # 🔹 fetch from config
+        if action not in ["read", "write"]:
+            return jsonify({
+                "allowed": False,
+                "output": "",
+                "error": "Invalid action",
+                "code": 400
+            }), 400
+
         s_lvl = SUBJECTS.get(user)
         o_lvl = OBJECTS.get(file)
         file_data = FILES.get(file)

@@ -11,3 +11,12 @@ export type AccessCheckResponse = {
   error: string;
   code: number;
 };
+
+export type BackendConfig = {
+  securityModel: "bell" | "biba";
+  subjects: Record<string, number>;
+  objects: Record<string, number>;
+  files: string[];
+  policies: Array<"bell" | "biba">;
+  actions: Array<"read" | "write">;
+};
