@@ -388,7 +388,7 @@
     .workflow,
     .dashboard-preview,
     .api-integration,
-    .faq-section,
+    .chatbot-section,
     .resource-hub {
       display: grid;
       gap: 28px;
@@ -429,7 +429,7 @@
 
     .feature-card-large,
     .feature-tile,
-    .faq-card,
+    .chatbot-panel,
     .resource-card {
       border-radius: 26px;
       background: var(--surface-1);
@@ -440,7 +440,7 @@
 
     .feature-card-large h3,
     .feature-tile h3,
-    .faq-card h3,
+    .chatbot-panel h3,
     .resource-card h3 {
       margin: 0 0 12px;
       font-size: 1.2rem;
@@ -449,7 +449,7 @@
 
     .feature-card-large p,
     .feature-tile p,
-    .faq-card p,
+    .chatbot-panel p,
     .resource-card p {
       margin: 0;
       color: var(--text-muted);
@@ -592,46 +592,83 @@
       white-space: pre;
     }
 
-    .faq-grid {
+    .chatbot-panel {
       display: grid;
       gap: 18px;
     }
 
-    .faq-card {
-      overflow: hidden;
+    .chat-window {
+      min-height: 320px;
+      max-height: 420px;
+      overflow-y: auto;
+      display: grid;
+      align-content: start;
+      gap: 12px;
+      padding: 18px;
+      border-radius: 22px;
+      background: #f8fafc;
+      border: 1px solid rgba(148, 163, 184, 0.18);
     }
 
-    .faq-card summary {
-      list-style: none;
-      font-size: 1rem;
-      font-weight: 600;
-      color: var(--text);
-      cursor: pointer;
-      padding: 18px 0;
+    .chat-message {
+      width: fit-content;
+      max-width: min(78%, 680px);
+      padding: 12px 14px;
+      border-radius: 18px;
+      line-height: 1.55;
+      color: #0f172a;
+      word-break: break-word;
+    }
+
+    .chat-message.bot {
+      justify-self: start;
+      background: #ffffff;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+    }
+
+    .chat-message.user {
+      justify-self: end;
+      background: #2563eb;
+      color: #ffffff;
+    }
+
+    .chat-form {
       display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+    }
+
+    .chat-form input {
+      width: 100%;
+      min-height: 52px;
+      border-radius: 18px;
+      border: 1px solid rgba(148, 163, 184, 0.28);
+      padding: 0 16px;
+      background: #ffffff;
+      color: #111827;
+    }
+
+    .chat-form button,
+    .chat-chip {
+      border: none;
+      background: #2563eb;
+      color: #ffffff;
+      font-weight: 700;
+      border-radius: 18px;
+      padding: 0 18px;
+      min-height: 52px;
+    }
+
+    .chat-suggestions {
+      display: flex;
+      flex-wrap: wrap;
       gap: 10px;
     }
 
-    .faq-card summary::-webkit-details-marker {
-      display: none;
-    }
-
-    .faq-card summary::after {
-      content: "+";
-      justify-self: end;
-      font-size: 1.2rem;
-      color: var(--accent);
-    }
-
-    .faq-card[open] summary::after {
-      content: "-";
-    }
-
-    .faq-card div {
-      padding: 0 0 18px;
-      color: var(--text-muted);
-      font-size: 0.96rem;
-      line-height: 1.75;
+    .chat-chip {
+      min-height: 42px;
+      background: rgba(37, 99, 235, 0.1);
+      color: #1d4ed8;
     }
 
     .resource-grid {
@@ -722,7 +759,10 @@
       .stat-grid,
       .insight-grid,
       .resource-grid,
-      .faq-grid {
+      .chat-suggestions {
+        grid-template-columns: 1fr;
+      }
+      .chat-form {
         grid-template-columns: 1fr;
       }
       .preview-content {
@@ -764,7 +804,7 @@
         <a href="#features">Features</a>
         <a href="#preview">Dashboard</a>
         <a href="#api">API</a>
-        <a href="#faq">FAQ</a>
+        <a href="#chatbot">Chatbot</a>
       </div>
     </header>
 
@@ -944,46 +984,26 @@
       </div>
     </section>
 
-    <section class="section-surface faq-section" id="faq">
+    <section class="section-surface chatbot-section" id="chatbot">
       <div class="section-header">
         <div class="highlight-bar"></div>
-        <h2>Frequently asked questions</h2>
-        <p>Answers to common questions about how the OS Security Framework works and how to extend it for your security exercises.</p>
+        <h2>Security chatbot</h2>
+        <p>Ask the assistant about Bell LaPadula, Biba, subjects, objects, backend setup, or why a request is allowed or denied.</p>
       </div>
 
-      <div class="faq-grid">
-        <details class="faq-card">
-          <summary>What is the Bell LaPadula model?</summary>
-          <div>The Bell LaPadula model focuses on preserving confidentiality. It prevents subjects from reading data at a higher security level and from writing data to a lower security level.</div>
-        </details>
-        <details class="faq-card">
-          <summary>What is the Biba model?</summary>
-          <div>The Biba model is centered on integrity. It ensures subjects cannot write to objects with higher integrity or read from objects with lower integrity than their own.</div>
-        </details>
-        <details class="faq-card">
-          <summary>How do subjects and objects map to OS entities?</summary>
-          <div>Subjects typically represent users or processes, while objects represent files, resources, or data containers. The framework assigns security labels to both and evaluates access accordingly.</div>
-        </details>
-        <details class="faq-card">
-          <summary>Can I extend the dashboard with custom models?</summary>
-          <div>Yes. The React app is modular, allowing you to add additional models or policy rules. The landing page is built to support backend-driven decision logic and extra UI components.</div>
-        </details>
-        <details class="faq-card">
-          <summary>Does the dashboard work on mobile?</summary>
-          <div>The page is fully responsive, with adaptative layouts and touch-friendly navigation. The preview and content sections resize for smaller screens.</div>
-        </details>
-        <details class="faq-card">
-          <summary>How do I connect to the backend?</summary>
-          <div>Update the data service in your React app to point at the Python API endpoint. The UI can then fetch decisions, policy details, and alerts from the backend.</div>
-        </details>
-        <details class="faq-card">
-          <summary>What is the root element for React?</summary>
-          <div>The React application mounts into the element with <code>id="root"</code> inside the preview card. This keeps the landing page and dynamic app together.</div>
-        </details>
-        <details class="faq-card">
-          <summary>Can this demo help with security training?</summary>
-          <div>Absolutely. The interface is designed for teaching security concepts, demonstrating mandatory access control, and helping teams understand why requests are accepted or rejected.</div>
-        </details>
+      <div class="chatbot-panel">
+        <div class="chat-window" id="chat-window" aria-live="polite">
+          <div class="chat-message bot">Hi. Ask me about Bell LaPadula, Biba, subjects, objects, or backend connection.</div>
+        </div>
+        <form class="chat-form" id="chat-form">
+          <input id="chat-input" name="message" type="text" autocomplete="off" placeholder="Ask about access control..." />
+          <button type="submit">Send</button>
+        </form>
+        <div class="chat-suggestions" aria-label="Suggested chatbot questions">
+          <button class="chat-chip" type="button">What is Bell LaPadula?</button>
+          <button class="chat-chip" type="button">Show subjects</button>
+          <button class="chat-chip" type="button">Why backend disconnected?</button>
+        </div>
       </div>
     </section>
 
@@ -1022,6 +1042,75 @@
     </footer>
   </div>
 
+  <script>
+    const chatWindow = document.getElementById("chat-window");
+    const chatForm = document.getElementById("chat-form");
+    const chatInput = document.getElementById("chat-input");
+    const chatChips = document.querySelectorAll(".chat-chip");
+
+    function addChatMessage(text, sender) {
+      const message = document.createElement("div");
+      message.className = `chat-message ${sender}`;
+      message.textContent = text;
+      chatWindow.appendChild(message);
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+
+    function fallbackChatReply(text) {
+      const message = text.toLowerCase();
+      if (message.includes("bell")) {
+        return "Bell LaPadula protects confidentiality with no read-up and no write-down rules.";
+      }
+      if (message.includes("biba")) {
+        return "Biba protects integrity with no read-down and no write-up rules.";
+      }
+      if (message.includes("subject") || message.includes("user")) {
+        return "Subjects are users or processes with security levels, such as Uday, Rishu, and Anisha.";
+      }
+      if (message.includes("backend") || message.includes("disconnected")) {
+        return "Start the backend with npm run start:backend, then open the page at http://127.0.0.1:8080.";
+      }
+      return "I can answer questions about Bell LaPadula, Biba, subjects, objects, and backend setup.";
+    }
+
+    async function sendChatMessage(text) {
+      const trimmed = text.trim();
+      if (!trimmed) {
+        return;
+      }
+
+      addChatMessage(trimmed, "user");
+      chatInput.value = "";
+
+      try {
+        const response = await fetch(`${window.OS_SECURITY_API_BASE}/chatbot`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: trimmed }),
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        const data = await response.json();
+        addChatMessage(data.reply || fallbackChatReply(trimmed), "bot");
+      } catch {
+        addChatMessage(fallbackChatReply(trimmed), "bot");
+      }
+    }
+
+    chatForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      sendChatMessage(chatInput.value);
+    });
+
+    chatChips.forEach((chip) => {
+      chip.addEventListener("click", () => {
+        sendChatMessage(chip.textContent || "");
+      });
+    });
+  </script>
   <script type="module" src="./dist/app.js"></script>
 </body>
 </html>

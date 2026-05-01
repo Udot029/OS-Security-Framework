@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify, make_response
 from flask_cors import CORS
 from bridge_manager import run_guard
+from chatbot import get_chatbot_reply
 from system_config import SECURITY_MODEL, SUBJECTS, OBJECTS, FILES, HASHES
 import logging
 
@@ -42,6 +43,18 @@ def config():
         "files": list(FILES.keys()),
         "policies": ["bell", "biba"],
         "actions": ["read", "write"]
+    })
+
+@app.route("/chatbot", methods=["POST", "OPTIONS"])
+def chatbot():
+    if request.method == "OPTIONS":
+        return make_response(jsonify({}), 204)
+
+    data = request.get_json(silent=True) or {}
+    message = data.get("message", "")
+
+    return jsonify({
+        "reply": get_chatbot_reply(message)
     })
 
 @app.route("/check-access", methods=["POST", "OPTIONS"])
