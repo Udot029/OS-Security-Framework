@@ -295,52 +295,123 @@
       perspective: 1300px;
     }
 
-    .cube {
-      width: 240px;
-      height: 240px;
+    .robot-head {
+      width: 260px;
+      height: 270px;
       position: relative;
       transform-style: preserve-3d;
-      animation: cube-rotate 12s linear infinite;
+      animation: robot-rotate 9s linear infinite;
     }
 
-    .cube-face {
+    .robot-face {
       position: absolute;
-      inset: auto;
-      width: 220px;
-      height: 220px;
-      border-radius: 24px;
-      border: 1px solid rgba(255,255,255,0.2);
-      background: rgba(59, 130, 246, 0.92);
-      box-shadow: 0 30px 60px rgba(15, 23, 42, 0.18);
+      inset: 32px 16px 18px;
+      border-radius: 38px 38px 46px 46px;
+      border: 1px solid rgba(255,255,255,0.24);
+      background:
+        linear-gradient(145deg, rgba(226, 232, 240, 0.96), rgba(56, 189, 248, 0.34) 42%, rgba(15, 23, 42, 0.94)),
+        linear-gradient(90deg, rgba(255,255,255,0.16), rgba(255,255,255,0));
+      box-shadow:
+        0 34px 70px rgba(15, 23, 42, 0.32),
+        inset 0 0 0 2px rgba(255,255,255,0.08),
+        inset 0 -28px 40px rgba(15, 23, 42, 0.32);
       display: grid;
       place-items: center;
-      text-align: center;
-      padding: 18px;
-      color: #f8fafc;
-      font-weight: 700;
-      line-height: 1.2;
-      mix-blend-mode: screen;
+      transform: translateZ(70px);
     }
 
-    .cube-face span {
-      display: block;
-      font-size: 0.82rem;
-      opacity: 0.85;
-      margin-bottom: 10px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
+    .robot-face::before {
+      content: "";
+      position: absolute;
+      top: 22px;
+      width: 78%;
+      height: 86px;
+      border-radius: 28px;
+      background:
+        radial-gradient(circle at 28% 50%, #67e8f9 0 9px, #0e7490 10px 15px, transparent 16px),
+        radial-gradient(circle at 72% 50%, #67e8f9 0 9px, #0e7490 10px 15px, transparent 16px),
+        linear-gradient(135deg, rgba(15, 23, 42, 0.96), rgba(30, 64, 175, 0.72));
+      border: 1px solid rgba(125, 211, 252, 0.38);
+      box-shadow:
+        0 0 28px rgba(56, 189, 248, 0.34),
+        inset 0 0 24px rgba(14, 165, 233, 0.22);
     }
 
-    .face-front { transform: rotateY(0deg) translateZ(120px); }
-    .face-back { transform: rotateY(180deg) translateZ(120px); }
-    .face-right { transform: rotateY(90deg) translateZ(120px); }
-    .face-left { transform: rotateY(-90deg) translateZ(120px); }
-    .face-top { transform: rotateX(90deg) translateZ(120px); }
-    .face-bottom { transform: rotateX(-90deg) translateZ(120px); }
+    .robot-face::after {
+      content: "";
+      position: absolute;
+      bottom: 42px;
+      width: 116px;
+      height: 24px;
+      border-radius: 999px;
+      background:
+        repeating-linear-gradient(90deg, transparent 0 12px, rgba(125, 211, 252, 0.72) 12px 15px),
+        linear-gradient(90deg, rgba(15, 23, 42, 0.92), rgba(8, 47, 73, 0.88));
+      border: 1px solid rgba(125, 211, 252, 0.3);
+      box-shadow: 0 0 18px rgba(56, 189, 248, 0.24);
+    }
 
-    @keyframes cube-rotate {
-      0% { transform: rotateX(14deg) rotateY(0deg); }
-      100% { transform: rotateX(14deg) rotateY(360deg); }
+    .robot-ear {
+      position: absolute;
+      top: 104px;
+      width: 34px;
+      height: 92px;
+      border-radius: 16px;
+      background: linear-gradient(180deg, rgba(148, 163, 184, 0.96), rgba(15, 23, 42, 0.92));
+      border: 1px solid rgba(255,255,255,0.18);
+      box-shadow: 0 18px 34px rgba(15, 23, 42, 0.22);
+    }
+
+    .robot-ear.left {
+      left: 0;
+      transform: translateZ(36px) rotateY(-22deg);
+    }
+
+    .robot-ear.right {
+      right: 0;
+      transform: translateZ(36px) rotateY(22deg);
+    }
+
+    .robot-antenna {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: 8px;
+      height: 46px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, #bae6fd, #0284c7);
+      transform: translateX(-50%) translateZ(55px);
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.38);
+    }
+
+    .robot-antenna::before {
+      content: "";
+      position: absolute;
+      top: -16px;
+      left: 50%;
+      width: 26px;
+      height: 26px;
+      border-radius: 999px;
+      background: #67e8f9;
+      transform: translateX(-50%);
+      box-shadow: 0 0 24px rgba(103, 232, 249, 0.8);
+    }
+
+    .robot-neck {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      width: 96px;
+      height: 42px;
+      border-radius: 18px 18px 10px 10px;
+      background: linear-gradient(180deg, rgba(148, 163, 184, 0.96), rgba(30, 41, 59, 0.98));
+      border: 1px solid rgba(255,255,255,0.14);
+      transform: translateX(-50%) translateZ(28px);
+    }
+
+    @keyframes robot-rotate {
+      0% { transform: rotateX(8deg) rotateY(0deg); }
+      100% { transform: rotateX(8deg) rotateY(360deg); }
     }
 
     .hero-visual-grid {
@@ -594,58 +665,199 @@
 
     .chatbot-panel {
       display: grid;
+      gap: 0;
+      overflow: hidden;
+      padding: 0;
+      background: #0f172a;
+    }
+
+    .chatbot-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       gap: 18px;
+      padding: 22px 24px;
+      background: linear-gradient(135deg, #111827 0%, #172554 54%, #0f766e 100%);
+      color: #f8fafc;
+    }
+
+    .assistant-identity {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .assistant-avatar {
+      width: 52px;
+      height: 52px;
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.22);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04);
+      font-weight: 800;
+      letter-spacing: 0.04em;
+    }
+
+    .assistant-identity h3 {
+      margin: 0;
+      color: #ffffff;
+      font-size: 1.05rem;
+    }
+
+    .assistant-identity p {
+      margin: 4px 0 0;
+      color: #cbd5e1;
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+
+    .assistant-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.14);
+      color: #d1fae5;
+      font-size: 0.88rem;
+      white-space: nowrap;
+    }
+
+    .status-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      background: #34d399;
+      box-shadow: 0 0 0 5px rgba(52, 211, 153, 0.14);
+    }
+
+    .chatbot-body {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 310px;
+      min-height: 560px;
+      background: #f8fafc;
+    }
+
+    .conversation-area {
+      display: grid;
+      grid-template-rows: 1fr auto auto;
+      min-width: 0;
+      background:
+        linear-gradient(180deg, rgba(248, 250, 252, 0.96), rgba(241, 245, 249, 0.96)),
+        radial-gradient(circle at top right, rgba(20, 184, 166, 0.12), transparent 28%);
     }
 
     .chat-window {
-      min-height: 320px;
-      max-height: 420px;
+      min-height: 420px;
+      max-height: 560px;
       overflow-y: auto;
       display: grid;
       align-content: start;
-      gap: 12px;
-      padding: 18px;
-      border-radius: 22px;
-      background: #f8fafc;
-      border: 1px solid rgba(148, 163, 184, 0.18);
+      gap: 16px;
+      padding: 24px;
     }
 
     .chat-message {
+      position: relative;
       width: fit-content;
       max-width: min(78%, 680px);
-      padding: 12px 14px;
-      border-radius: 18px;
-      line-height: 1.55;
+      padding: 14px 16px;
+      border-radius: 20px;
+      line-height: 1.58;
       color: #0f172a;
       word-break: break-word;
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+    }
+
+    .chat-message::before {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      opacity: 0.68;
     }
 
     .chat-message.bot {
       justify-self: start;
       background: #ffffff;
-      border: 1px solid rgba(148, 163, 184, 0.2);
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      border-top-left-radius: 8px;
+    }
+
+    .chat-message.bot::before {
+      content: "Assistant";
+      color: #0f766e;
     }
 
     .chat-message.user {
       justify-self: end;
-      background: #2563eb;
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
       color: #ffffff;
+      border-top-right-radius: 8px;
+    }
+
+    .chat-message.user::before {
+      content: "You";
+      color: #dbeafe;
+    }
+
+    .chat-message.typing {
+      color: #64748b;
+      min-width: 110px;
+    }
+
+    .chat-message.typing span {
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      margin-right: 5px;
+      border-radius: 999px;
+      background: #94a3b8;
+      animation: typing-pulse 1s infinite ease-in-out;
+    }
+
+    .chat-message.typing span:nth-child(2) {
+      animation-delay: 140ms;
+    }
+
+    .chat-message.typing span:nth-child(3) {
+      animation-delay: 280ms;
+    }
+
+    @keyframes typing-pulse {
+      0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+      40% { transform: translateY(-4px); opacity: 1; }
     }
 
     .chat-form {
       display: grid;
-      grid-template-columns: 1fr auto;
+      grid-template-columns: auto 1fr auto;
       gap: 12px;
+      padding: 18px 22px 22px;
+      background: rgba(255,255,255,0.86);
+      border-top: 1px solid rgba(148, 163, 184, 0.16);
     }
 
     .chat-form input {
       width: 100%;
-      min-height: 52px;
+      min-height: 54px;
       border-radius: 18px;
       border: 1px solid rgba(148, 163, 184, 0.28);
       padding: 0 16px;
       background: #ffffff;
       color: #111827;
+      outline: none;
+    }
+
+    .chat-form input:focus {
+      border-color: rgba(37, 99, 235, 0.48);
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
     }
 
     .chat-form button,
@@ -656,19 +868,117 @@
       font-weight: 700;
       border-radius: 18px;
       padding: 0 18px;
-      min-height: 52px;
+      min-height: 54px;
+    }
+
+    .voice-button {
+      width: 54px;
+      padding: 0;
+      border-radius: 18px;
+      background: #0f766e;
+      position: relative;
+    }
+
+    .voice-button::before {
+      content: "";
+      width: 14px;
+      height: 20px;
+      border-radius: 999px;
+      border: 2px solid #ffffff;
+      border-bottom-width: 5px;
+      display: block;
+      margin: 0 auto;
+    }
+
+    .voice-button.listening {
+      background: #be123c;
+      box-shadow: 0 0 0 6px rgba(190, 18, 60, 0.12);
+      animation: mic-listening 1.2s infinite ease-in-out;
+    }
+
+    @keyframes mic-listening {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
     }
 
     .chat-suggestions {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
+      padding: 0 22px 20px;
+      background: rgba(255,255,255,0.86);
     }
 
     .chat-chip {
       min-height: 42px;
-      background: rgba(37, 99, 235, 0.1);
-      color: #1d4ed8;
+      background: rgba(15, 118, 110, 0.1);
+      color: #0f766e;
+      border: 1px solid rgba(15, 118, 110, 0.12);
+    }
+
+    .voice-panel {
+      display: grid;
+      align-content: start;
+      gap: 16px;
+      padding: 22px;
+      background: #ffffff;
+      border-left: 1px solid rgba(148, 163, 184, 0.16);
+    }
+
+    .voice-panel h3 {
+      margin: 0;
+      color: #0f172a;
+      font-size: 1rem;
+    }
+
+    .voice-panel p,
+    .voice-status {
+      margin: 0;
+      color: #64748b;
+      font-size: 0.9rem;
+      line-height: 1.55;
+    }
+
+    .voice-control {
+      display: grid;
+      gap: 8px;
+      color: #0f172a;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    .voice-control select,
+    .voice-control input[type="range"] {
+      width: 100%;
+    }
+
+    .voice-control select {
+      min-height: 42px;
+      border-radius: 12px;
+      border: 1px solid rgba(148, 163, 184, 0.28);
+      background: #f8fafc;
+      color: #111827;
+      padding: 0 10px;
+    }
+
+    .voice-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px;
+      border-radius: 14px;
+      background: #f8fafc;
+      border: 1px solid rgba(148, 163, 184, 0.16);
+      color: #0f172a;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    .voice-toggle input {
+      width: 20px;
+      height: 20px;
+      accent-color: #0f766e;
     }
 
     .resource-grid {
@@ -701,16 +1011,62 @@
 
     .footer {
       display: grid;
-      gap: 14px;
-      padding: 28px 40px 34px;
-      color: #64748b;
+      gap: 22px;
+      padding: 34px 40px 38px;
+      background: #0f172a;
+      color: #cbd5e1;
       font-size: 0.95rem;
-      text-align: center;
+      text-align: left;
     }
 
     .footer a {
       color: inherit;
       text-decoration: underline;
+    }
+
+    .footer h2 {
+      margin: 0;
+      color: #ffffff;
+      font-size: clamp(1.6rem, 2.5vw, 2.25rem);
+      letter-spacing: -0.02em;
+    }
+
+    .footer p {
+      margin: 8px 0 0;
+      color: #94a3b8;
+      max-width: 760px;
+    }
+
+    .footer-details {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+
+    .footer-item {
+      display: grid;
+      gap: 10px;
+      padding: 16px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .footer-item span {
+      color: #94a3b8;
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .footer-item strong {
+      color: #f8fafc;
+      font-size: 1rem;
+    }
+
+    .footer-contact-row {
+      display: grid;
+      gap: 4px;
     }
 
     @media (max-width: 1080px) {
@@ -763,10 +1119,24 @@
         grid-template-columns: 1fr;
       }
       .chat-form {
-        grid-template-columns: 1fr;
+        grid-template-columns: auto 1fr;
+      }
+      .chat-form button[type="submit"] {
+        grid-column: 1 / -1;
       }
       .preview-content {
         padding: 20px;
+      }
+      .chatbot-header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+      .chatbot-body {
+        grid-template-columns: 1fr;
+      }
+      .voice-panel {
+        border-left: none;
+        border-top: 1px solid rgba(148, 163, 184, 0.16);
       }
       .preview-header {
         flex-direction: column;
@@ -789,7 +1159,8 @@
   }
   </script>
   <script>
-    window.OS_SECURITY_API_BASE = "http://127.0.0.1:5000";
+    const apiHost = window.location.hostname || "127.0.0.1";
+    window.OS_SECURITY_API_BASE = `http://${apiHost}:5000`;
   </script>
 </head>
 <body>
@@ -800,11 +1171,9 @@
         <p>Modern OS access control simulation for confidentiality and integrity enforcement.</p>
       </div>
       <div class="site-nav">
-        <a href="#overview">Overview</a>
-        <a href="#features">Features</a>
-        <a href="#preview">Dashboard</a>
-        <a href="#api">API</a>
+        <a href="#dashboard">Dashboard</a>
         <a href="#chatbot">Chatbot</a>
+        <a href="#contact">Contact</a>
       </div>
     </header>
 
@@ -814,8 +1183,8 @@
         <h1 class="hero-title">Run OS-level policy checks with a stunning interactive dashboard.</h1>
         <p class="hero-copy">Simulate subject/object access rules with Bell LaPadula and Biba models, review allowed or denied decisions, and inspect the policy path that produced each result.</p>
         <div class="hero-actions">
-          <a class="primary" href="#preview">Open Dashboard</a>
-          <a class="secondary" href="#api">View API</a>
+          <a class="primary" href="#dashboard">Open Dashboard</a>
+          <a class="secondary" href="#contact">Contact</a>
         </div>
         <div class="hero-meta">
           <span class="hero-chip"><strong>Live demo</strong> Real-time guard evaluation</span>
@@ -826,18 +1195,18 @@
 
       <div class="hero-visual" aria-hidden="true">
         <div class="hero-visual-scene">
-          <div class="cube">
-            <div class="cube-face face-front"><span>Live dashboard</span>OS security status</div>
-            <div class="cube-face face-right"><span>Policy</span>Bell / Biba</div>
-            <div class="cube-face face-left"><span>Action</span>Read / Write</div>
-            <div class="cube-face face-top"><span>Subjects</span>Uday, Rishu</div>
-            <div class="cube-face face-bottom"><span>Result</span>Allow / Deny</div>
+          <div class="robot-head">
+            <div class="robot-antenna"></div>
+            <div class="robot-ear left"></div>
+            <div class="robot-ear right"></div>
+            <div class="robot-face"></div>
+            <div class="robot-neck"></div>
           </div>
         </div>
         <div class="hero-visual-grid">
           <div class="visual-card">
-            <h4>Live 3D preview</h4>
-            <p>Dynamic dashboard visuals show the access decision path and status in a polished 3D presentation.</p>
+            <h4>Policy model view</h4>
+            <p>Dashboard visuals show the access decision path and status in a polished presentation.</p>
           </div>
           <div class="visual-card">
             <h4>Real-time changes</h4>
@@ -851,137 +1220,8 @@
       </div>
     </section>
 
-    <section class="section-surface introduction" id="overview">
-      <div class="section-header">
-        <div class="highlight-bar"></div>
-        <h2>Why this framework stands out</h2>
-        <p>The OS Security Framework gives developers and security teams a polished interface for exploring information flow policies, verifying subject-object protection, and verifying access decisions with audit-friendly detail.</p>
-      </div>
-
-      <div class="stat-grid">
-        <div class="feature-tile">
-          <span class="mini-badge">Confidentiality</span>
-          <h3>Bell LaPadula model</h3>
-          <p>Preserve data confidentiality by blocking unauthorized reads and writes using classical no read-up / no write-down enforcement.</p>
-        </div>
-        <div class="feature-tile">
-          <span class="mini-badge">Integrity</span>
-          <h3>Biba model</h3>
-          <p>Protect data integrity through integrity-level enforcement, ensuring subjects cannot compromise objects below or above their trust boundary.</p>
-        </div>
-        <div class="feature-tile">
-          <span class="mini-badge">Usability</span>
-          <h3>Modern interface</h3>
-          <p>Designed as a clean, responsive web experience with clear status panels, form controls, and guided result interpretation.</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="section-surface feature-wall" id="features">
-      <div class="section-header">
-        <div class="highlight-bar"></div>
-        <h2>Designed for learning, testing, and demos</h2>
-        <p>From classroom exercises to proof-of-concept security evaluations, this page gives you the interface and context needed to validate OS-level access controls with confidence.</p>
-      </div>
-
-      <div class="insight-grid">
-        <div class="insight-card">
-          <strong>01</strong>
-          <p>Interactive subject and object selection lets users test any access scenario quickly and compare model outcomes side by side.</p>
-        </div>
-        <div class="insight-card">
-          <strong>02</strong>
-          <p>Clear policy explanation reveals the exact rule path that determined whether a request was allowed or denied.</p>
-        </div>
-        <div class="insight-card">
-          <strong>03</strong>
-          <p>Built-in support for both Bell and Biba controls makes this demo suitable for confidentiality and integrity-focused studies.</p>
-        </div>
-        <div class="insight-card">
-          <strong>04</strong>
-          <p>Backend-ready design ensures the dashboard can connect to your Python service and evaluate requests in real time.</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="section-surface workflow">
-      <div class="section-header">
-        <div class="highlight-bar"></div>
-        <h2>Interactive workflow</h2>
-        <p>The page guides users through four core steps: choose a model, configure the access request, evaluate the decision, and review the policy results.</p>
-      </div>
-
-      <div class="stat-grid">
-        <div class="feature-tile">
-          <span class="mini-badge">Step 1</span>
-          <h3>Select a security model</h3>
-          <p>Pick between Bell LaPadula and Biba and instantly see how the chosen model affects access permissions.</p>
-        </div>
-        <div class="feature-tile">
-          <span class="mini-badge">Step 2</span>
-          <h3>Configure subjects and objects</h3>
-          <p>Define subjects, objects, labels, and requested operations to build real access scenarios.</p>
-        </div>
-        <div class="feature-tile">
-          <span class="mini-badge">Step 3</span>
-          <h3>Run the decision engine</h3>
-          <p>Submit requests to the backend and receive immediate allow/deny outcomes with policy details.</p>
-        </div>
-        <div class="feature-tile">
-          <span class="mini-badge">Step 4</span>
-          <h3>Interpret results</h3>
-          <p>Review why a request was approved or blocked, then use the insights to refine policy design or test edge cases.</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="section-surface dashboard-preview" id="preview">
-      <div class="section-header">
-        <div class="highlight-bar"></div>
-        <h2>Live 3D dashboard preview</h2>
-        <p>The dashboard area below is the actual React mount target for your live 3D access control demo. It showcases the interactive model, policy state, and real-time decision cube.</p>
-      </div>
-
-      <div class="preview-shell">
-        <div class="preview-panel">
-          <div class="preview-header">
-            <h3>Security dashboard</h3>
-            <span>React application mount target</span>
-          </div>
-          <div class="preview-content">
-            <div id="root">
-              <p>Live 3D dashboard will appear here once the React app loads.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section-surface api-integration" id="api">
-      <div class="section-header">
-        <div class="highlight-bar"></div>
-        <h2>API integration</h2>
-        <p>The front-end can connect to your Python backend and expose live policy decisioning. Use this sample request body to verify the API contract.</p>
-      </div>
-
-      <div class="code-block" aria-label="Sample API request">
-        <span class="code-line">POST http://127.0.0.1:5000/check-access</span>
-        <span class="code-line"></span>
-        <span class="code-line">{</span>
-        <span class="code-line">  "user": "Uday",</span>
-        <span class="code-line">  "file": "file1",</span>
-        <span class="code-line">  "action": "read",</span>
-        <span class="code-line">  "policy": "bell"</span>
-        <span class="code-line">}</span>
-        <span class="code-line"></span>
-        <span class="code-line">Response:</span>
-        <span class="code-line">{</span>
-        <span class="code-line">  "allowed": true,</span>
-        <span class="code-line">  "output": "allowed",</span>
-        <span class="code-line">  "error": "",</span>
-        <span class="code-line">  "code": 0</span>
-        <span class="code-line">}</span>
-      </div>
+    <section class="section-surface" id="dashboard">
+      <div id="root"></div>
     </section>
 
     <section class="section-surface chatbot-section" id="chatbot">
@@ -992,53 +1232,106 @@
       </div>
 
       <div class="chatbot-panel">
-        <div class="chat-window" id="chat-window" aria-live="polite">
-          <div class="chat-message bot">Hi. Ask me about Bell LaPadula, Biba, subjects, objects, or backend connection.</div>
+        <div class="chatbot-header">
+          <div class="assistant-identity">
+            <div class="assistant-avatar" aria-hidden="true">AI</div>
+            <div>
+              <h3>Security Assistant</h3>
+              <p>Voice-ready OS access-control guide</p>
+            </div>
+          </div>
+          <div class="assistant-status" id="assistant-status">
+            <span class="status-dot" aria-hidden="true"></span>
+            Ready
+          </div>
         </div>
-        <form class="chat-form" id="chat-form">
-          <input id="chat-input" name="message" type="text" autocomplete="off" placeholder="Ask about access control..." />
-          <button type="submit">Send</button>
-        </form>
-        <div class="chat-suggestions" aria-label="Suggested chatbot questions">
-          <button class="chat-chip" type="button">What is Bell LaPadula?</button>
-          <button class="chat-chip" type="button">Show subjects</button>
-          <button class="chat-chip" type="button">Why backend disconnected?</button>
-        </div>
-      </div>
-    </section>
 
-    <section class="section-surface resource-hub">
-      <div class="section-header">
-        <div class="highlight-bar"></div>
-        <h2>More resources</h2>
-        <p>Use these links to explore related documentation, inspect the project source, or learn more about mandatory access control models.</p>
-      </div>
+        <div class="chatbot-body">
+          <div class="conversation-area">
+            <div class="chat-window" id="chat-window" aria-live="polite">
+              <div class="chat-message bot">Hi. I can explain Bell LaPadula, Biba, subjects, objects, backend setup, and access decisions. Press the mic and speak, or type below.</div>
+            </div>
+            <form class="chat-form" id="chat-form">
+              <button class="voice-button" id="voice-button" type="button" aria-label="Start voice input" title="Start voice input"></button>
+              <input id="chat-input" name="message" type="text" autocomplete="off" placeholder="Ask about access control..." />
+              <button type="submit">Send</button>
+            </form>
+            <div class="chat-suggestions" aria-label="Suggested chatbot prompts">
+              <button class="chat-chip" type="button">Explain Bell LaPadula</button>
+              <button class="chat-chip" type="button">Show subjects</button>
+              <button class="chat-chip" type="button">Check Uday read file1 using Bell</button>
+            </div>
+          </div>
 
-      <div class="resource-grid">
-        <div class="resource-card">
-          <h3>Project README</h3>
-          <p>See setup instructions, backend details, and the overall architecture of the OS Security Framework repository.</p>
-          <a href="#">Open README</a>
-        </div>
-        <div class="resource-card">
-          <h3>Backend API</h3>
-          <p>Review the Python API contract and endpoints used by the dashboard to evaluate policy decisions and return structured results.</p>
-          <a href="#">View API details</a>
-        </div>
-        <div class="resource-card">
-          <h3>Security models</h3>
-          <p>Understand the difference between confidentiality and integrity controls, and how Bell LaPadula and Biba apply to OS-level access control.</p>
-          <a href="#">Learn more</a>
+          <aside class="voice-panel" aria-label="Voice configuration">
+            <h3>Voice Configuration</h3>
+            <p id="voice-status">Voice output is ready when your browser provides speech voices.</p>
+            <label class="voice-control">
+              Recognition language
+              <select id="voice-language">
+                <option value="en-US">English US</option>
+                <option value="en-IN">English India</option>
+                <option value="hi-IN">Hindi India</option>
+              </select>
+            </label>
+            <label class="voice-control">
+              Reply voice
+              <select id="voice-select"></select>
+            </label>
+            <label class="voice-control">
+              Speed <span id="voice-rate-value">1.00</span>
+              <input id="voice-rate" type="range" min="0.7" max="1.35" step="0.05" value="1" />
+            </label>
+            <label class="voice-control">
+              Pitch <span id="voice-pitch-value">1.00</span>
+              <input id="voice-pitch" type="range" min="0.75" max="1.35" step="0.05" value="1" />
+            </label>
+            <label class="voice-toggle">
+              Speak replies
+              <input id="voice-autospeak" type="checkbox" checked />
+            </label>
+          </aside>
         </div>
       </div>
     </section>
 
     <hr class="divider" />
 
-    <footer class="footer">
-      <div>OS Security Framework landing page - an interactive education and evaluation experience for access control demos.</div>
-      <div>Built for security teams, instructors, and developers working with OS policy models.</div>
-      <div>Need help? <a href="#">Contact support</a> or inspect <code>frontend/app.tsx</code> for the React dashboard entry.</div>
+    <footer class="footer" id="contact">
+      <div>
+        <h2>Contact</h2>
+        <p>Reach out for questions, project review, or collaboration related to the OS Security Framework.</p>
+      </div>
+      <div class="footer-details">
+        <div class="footer-item">
+          <div class="footer-contact-row">
+            <span>Name</span>
+            <strong>Uday</strong>
+          </div>
+          <div class="footer-contact-row">
+            <span>Email</span>
+            <strong><a href="mailto:udot029@gmail.com">udot029@gmail.com</a></strong>
+          </div>
+          <div class="footer-contact-row">
+            <span>Phone</span>
+            <strong><a href="tel:+919485566287">9485566287</a></strong>
+          </div>
+        </div>
+        <div class="footer-item">
+          <div class="footer-contact-row">
+            <span>Name</span>
+            <strong>Rishu</strong>
+          </div>
+          <div class="footer-contact-row">
+            <span>Email</span>
+            <strong><a href="mailto:rishurebel979@gmail.com">rishurebel979@gmail.com</a></strong>
+          </div>
+          <div class="footer-contact-row">
+            <span>Phone</span>
+            <strong><a href="tel:+917658854704">7658854704</a></strong>
+          </div>
+        </div>
+      </div>
     </footer>
   </div>
 
@@ -1047,6 +1340,21 @@
     const chatForm = document.getElementById("chat-form");
     const chatInput = document.getElementById("chat-input");
     const chatChips = document.querySelectorAll(".chat-chip");
+    const assistantStatus = document.getElementById("assistant-status");
+    const voiceButton = document.getElementById("voice-button");
+    const voiceLanguage = document.getElementById("voice-language");
+    const voiceSelect = document.getElementById("voice-select");
+    const voiceRate = document.getElementById("voice-rate");
+    const voicePitch = document.getElementById("voice-pitch");
+    const voiceRateValue = document.getElementById("voice-rate-value");
+    const voicePitchValue = document.getElementById("voice-pitch-value");
+    const voiceAutospeak = document.getElementById("voice-autospeak");
+    const voiceStatus = document.getElementById("voice-status");
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let recognition = null;
+    let isListening = false;
+    let availableVoices = [];
+    let typingBubble = null;
 
     function addChatMessage(text, sender) {
       const message = document.createElement("div");
@@ -1054,6 +1362,88 @@
       message.textContent = text;
       chatWindow.appendChild(message);
       chatWindow.scrollTop = chatWindow.scrollHeight;
+      return message;
+    }
+
+    function setAssistantStatus(text) {
+      assistantStatus.lastChild.textContent = ` ${text}`;
+    }
+
+    function showTyping() {
+      if (typingBubble) {
+        return;
+      }
+      typingBubble = document.createElement("div");
+      typingBubble.className = "chat-message bot typing";
+      typingBubble.innerHTML = "<span></span><span></span><span></span>";
+      chatWindow.appendChild(typingBubble);
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+
+    function hideTyping() {
+      if (typingBubble) {
+        typingBubble.remove();
+        typingBubble = null;
+      }
+    }
+
+    function updateVoiceRangeLabels() {
+      voiceRateValue.textContent = Number(voiceRate.value).toFixed(2);
+      voicePitchValue.textContent = Number(voicePitch.value).toFixed(2);
+    }
+
+    function loadVoices() {
+      if (!("speechSynthesis" in window)) {
+        voiceStatus.textContent = "Speech output is not supported in this browser.";
+        voiceSelect.innerHTML = "<option value=\"\">No voices available</option>";
+        voiceAutospeak.checked = false;
+        voiceAutospeak.disabled = true;
+        return;
+      }
+
+      availableVoices = window.speechSynthesis.getVoices();
+      voiceSelect.innerHTML = "";
+
+      if (!availableVoices.length) {
+        voiceSelect.innerHTML = "<option value=\"\">Loading voices...</option>";
+        voiceStatus.textContent = "Loading browser voices.";
+        return;
+      }
+
+      availableVoices.forEach((voice, index) => {
+        const option = document.createElement("option");
+        option.value = String(index);
+        option.textContent = `${voice.name} (${voice.lang})`;
+        if (voice.lang.toLowerCase().startsWith("en")) {
+          option.selected = voiceSelect.value === "" || voice.default;
+        }
+        voiceSelect.appendChild(option);
+      });
+
+      voiceStatus.textContent = `${availableVoices.length} browser voices available.`;
+    }
+
+    function speakReply(text) {
+      if (!voiceAutospeak.checked || !("speechSynthesis" in window) || !text) {
+        return;
+      }
+
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      const selectedVoice = availableVoices[Number(voiceSelect.value)];
+      if (selectedVoice) {
+        utterance.voice = selectedVoice;
+        utterance.lang = selectedVoice.lang;
+      } else {
+        utterance.lang = voiceLanguage.value;
+      }
+      utterance.rate = Number(voiceRate.value);
+      utterance.pitch = Number(voicePitch.value);
+      utterance.volume = 1;
+      utterance.onstart = () => setAssistantStatus("Speaking");
+      utterance.onend = () => setAssistantStatus("Ready");
+      utterance.onerror = () => setAssistantStatus("Ready");
+      window.speechSynthesis.speak(utterance);
     }
 
     function fallbackChatReply(text) {
@@ -1081,6 +1471,8 @@
 
       addChatMessage(trimmed, "user");
       chatInput.value = "";
+      setAssistantStatus("Thinking");
+      showTyping();
 
       try {
         const response = await fetch(`${window.OS_SECURITY_API_BASE}/chatbot`, {
@@ -1094,11 +1486,92 @@
         }
 
         const data = await response.json();
-        addChatMessage(data.reply || fallbackChatReply(trimmed), "bot");
+        const reply = data.reply || fallbackChatReply(trimmed);
+        hideTyping();
+        addChatMessage(reply, "bot");
+        speakReply(reply);
       } catch {
-        addChatMessage(fallbackChatReply(trimmed), "bot");
+        const reply = fallbackChatReply(trimmed);
+        hideTyping();
+        addChatMessage(reply, "bot");
+        speakReply(reply);
+      } finally {
+        if (!window.speechSynthesis?.speaking) {
+          setAssistantStatus("Ready");
+        }
       }
     }
+
+    function setupSpeechRecognition() {
+      if (!SpeechRecognition) {
+        voiceButton.disabled = true;
+        voiceButton.title = "Voice input is not supported in this browser";
+        voiceStatus.textContent = "Voice input is not supported in this browser. Chrome or Edge is recommended.";
+        return;
+      }
+
+      recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = true;
+
+      recognition.onstart = () => {
+        isListening = true;
+        voiceButton.classList.add("listening");
+        voiceButton.setAttribute("aria-label", "Stop voice input");
+        setAssistantStatus("Listening");
+      };
+
+      recognition.onresult = (event) => {
+        let interim = "";
+        let finalText = "";
+
+        for (let index = event.resultIndex; index < event.results.length; index += 1) {
+          const transcript = event.results[index][0].transcript;
+          if (event.results[index].isFinal) {
+            finalText += transcript;
+          } else {
+            interim += transcript;
+          }
+        }
+
+        chatInput.value = finalText || interim;
+        if (finalText.trim()) {
+          sendChatMessage(finalText);
+        }
+      };
+
+      recognition.onerror = () => {
+        setAssistantStatus("Ready");
+        voiceStatus.textContent = "Voice input stopped. Check microphone permission if it did not hear you.";
+      };
+
+      recognition.onend = () => {
+        isListening = false;
+        voiceButton.classList.remove("listening");
+        voiceButton.setAttribute("aria-label", "Start voice input");
+        if (!window.speechSynthesis?.speaking) {
+          setAssistantStatus("Ready");
+        }
+      };
+    }
+
+    voiceButton.addEventListener("click", () => {
+      if (!recognition) {
+        return;
+      }
+
+      if (isListening) {
+        recognition.stop();
+        return;
+      }
+
+      window.speechSynthesis?.cancel();
+      recognition.lang = voiceLanguage.value;
+      recognition.start();
+    });
+
+    voiceRate.addEventListener("input", updateVoiceRangeLabels);
+    voicePitch.addEventListener("input", updateVoiceRangeLabels);
 
     chatForm.addEventListener("submit", (event) => {
       event.preventDefault();
@@ -1110,6 +1583,14 @@
         sendChatMessage(chip.textContent || "");
       });
     });
+
+    updateVoiceRangeLabels();
+    setupSpeechRecognition();
+    loadVoices();
+
+    if ("speechSynthesis" in window) {
+      window.speechSynthesis.onvoiceschanged = loadVoices;
+    }
   </script>
   <script type="module" src="./dist/app.js"></script>
 </body>
