@@ -1,14 +1,29 @@
 from flask import Flask, request, jsonify, make_response
+from flask_cors import CORS
 from bridge_manager import run_guard
 from system_config import SECURITY_MODEL, SUBJECTS, OBJECTS, FILES, HASHES
+import logging
 
 app = Flask(__name__)
 
+# Enable CORS with proper configuration
+CORS(app, resources={
+    r"/*": {
+        "origins": "*",
+        "methods": ["GET", "POST", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization"],
+        "supports_credentials": False
+    }
+})
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 @app.after_request
-def add_cors_headers(response):
-    response.headers["Access-Control-Allow-Origin"] = "*"
-    response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
-    response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+def add_headers(response):
+    response.headers["Connection"] = "keep-alive"
+    response.headers["Cache-Control"] = "no-cache"
     return response
 
 @app.route("/")
@@ -39,10 +54,20 @@ def check_access():
         hash_val = HASHES.get(file)
 
         if None in [s_lvl, o_lvl, file_data, hash_val]:
-            return jsonify({"error": "Invalid user or file"}), 400
+            return jsonify({
+                "allowed": False,
+                "output": "",
+                "error": "Invalid user or file",
+                "code": 400
+            }), 400
 
         if policy not in ["bell", "biba"]:
-            return jsonify({"error": "Invalid policy"}), 400
+            return jsonify({
+                "allowed": False,
+                "output": "",
+                "error": "Invalid policy",
+                "code": 400
+            }), 400
 
         result = run_guard(
             policy,
@@ -56,6 +81,18 @@ def check_access():
         return jsonify(result)
 
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({
+            "allowed": False,
+            "output": "",
+            "error": str(e),
+            "code": 500
+        }), 500
 if __name__ == "__main__":
-    app.run(debug=True)
+    # Run with proper configuration for development
+    app.run(
+        host="0.0.0.0",
+        port=5000,
+        debug=False,  # Set to False to prevent reload issues
+        use_reloader=False,  # Disable reloader to maintain connection
+        threaded=True  # Enable threading for concurrent requests
+    )

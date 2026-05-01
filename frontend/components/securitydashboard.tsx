@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { checkAccess } from "../services/api_service.ts";
+import { checkAccess, checkBackendHealth } from "../services/api_service.ts";
 import { AccessCheckRequest, AccessCheckResponse } from "../type/type.ts";
 
 const SUBJECTS = ["alice", "bob"];
@@ -162,12 +162,8 @@ export default function SecurityDashboard() {
   const cubeTransform = `rotateX(${18 + liveSimulation.sLvl * 7}deg) rotateY(${36 + liveSimulation.oLvl * 12 + cubeRotation}deg) rotateZ(${action === "read" ? 6 : -6}deg)`;
 
   async function checkBackendStatus() {
-    try {
-      const res = await fetch("http://localhost:5000/status");
-      setBackendStatus(res.ok ? "connected" : "disconnected");
-    } catch {
-      setBackendStatus("disconnected");
-    }
+    const isHealthy = await checkBackendHealth();
+    setBackendStatus(isHealthy ? "connected" : "disconnected");
   }
 
   async function handleSubmit(event: React.FormEvent) {
@@ -180,16 +176,20 @@ export default function SecurityDashboard() {
       const result = await checkAccess(requestPayload);
       setResponse(result);
       setHistory((prev) => [result, ...prev].slice(0, 5));
+      setBackendStatus("connected");
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
+      setBackendStatus("disconnected");
     } finally {
       setLoading(false);
-      checkBackendStatus();
     }
   }
 
+  // Check backend status on mount and periodically
   useEffect(() => {
     checkBackendStatus();
+    const interval = setInterval(checkBackendStatus, 5000); // Check every 5 seconds
+    return () => clearInterval(interval);
   }, []);
 
   const activePolicy = POLICIES.find((item) => item.id === policy);

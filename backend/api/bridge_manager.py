@@ -69,6 +69,7 @@ def run_guard(model, s_lvl, o_lvl, action, data, hash_val):
     except FileNotFoundError:
         return {
             "allowed": False,
+            "output": "",
             "error": f"guard.exe not found at {GUARD_PATH}",
             "code": -1
         }
@@ -82,6 +83,7 @@ def run_guard(model, s_lvl, o_lvl, action, data, hash_val):
             }
         return {
             "allowed": False,
+            "output": "",
             "error": str(e),
             "code": -1
         }
