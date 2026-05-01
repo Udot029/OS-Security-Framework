@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { checkAccess, checkBackendHealth, getBackendConfig } from "../services/api_service.ts";
 import { AccessCheckRequest, AccessCheckResponse, BackendConfig } from "../type/type.ts";
 
-const SUBJECTS = ["alice", "bob", "charlie", "diana", "eve", "frank", "grace", "heidi", "ivan", "judy"];
+const SUBJECTS = ["Uday", "Rishu", "Anisha", "Kavya", "Rahul", "Sanya", "Aarav", "Diya", "Kabir", "Myra"];
 const FILES = ["file1", "file2"];
 const ACTIONS = ["read", "write"] as const;
 const POLICIES = [
@@ -11,16 +11,16 @@ const POLICIES = [
 ] as const;
 
 const SUBJECT_LEVELS: Record<string, number> = {
-  alice: 3,
-  bob: 1,
-  charlie: 2,
-  diana: 1,
-  eve: 2,
-  frank: 1,
-  grace: 2,
-  heidi: 1,
-  ivan: 2,
-  judy: 1,
+  Uday: 3,
+  Rishu: 1,
+  Anisha: 2,
+  Kavya: 1,
+  Rahul: 2,
+  Sanya: 1,
+  Aarav: 2,
+  Diya: 1,
+  Kabir: 2,
+  Myra: 1,
 };
 
 const OBJECT_LEVELS: Record<string, number> = {

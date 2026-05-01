@@ -81,7 +81,7 @@ Update Status Badge to "Connected" ✅
 
 ### `/check-access` (POST)
 - **Purpose**: Evaluate access control policy
-- **Payload**: `{ "user": "alice", "file": "file1", "action": "read", "policy": "bell" }`
+- **Payload**: `{ "user": "Uday", "file": "file1", "action": "read", "policy": "bell" }`
 - **Response**: `{ "allowed": true, "output": "...", "error": "", "code": 0 }`
 - **Retries**: 3 attempts with 500ms delay between retries
 - **Timeout**: 10 seconds per request

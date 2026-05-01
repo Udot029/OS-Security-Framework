@@ -72,7 +72,7 @@ Evaluates access control decisions based on security policy.
 **Request**:
 ```json
 {
-  "user": "alice",
+  "user": "Uday",
   "file": "file1",
   "action": "read",
   "policy": "bell"

@@ -1,7 +1,15 @@
 SECURITY_MODEL = "bell"
 SUBJECTS = {
-    "alice": 3,
-    "bob": 1
+    "Uday": 3,
+    "Rishu": 1,
+    "Anisha": 2,
+    "Kavya": 1,
+    "Rahul": 2,
+    "Sanya": 1,
+    "Aarav": 2,
+    "Diya": 1,
+    "Kabir": 2,
+    "Myra": 1
 }
 OBJECTS = {
     "file1": 2,
