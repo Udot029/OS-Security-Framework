@@ -1,7 +1,7 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { useEffect, useMemo, useState } from "react";
 import { checkAccess, checkBackendHealth, getBackendConfig } from "../services/api_service.js";
-const SUBJECTS = ["Uday", "Rishu","Anisha", "Kavya", "Rahul", "Sanya", "Aarav", "Diya", "Kabir", "Myra"];
+const SUBJECTS = ["Uday", "Rishu", "Anisha", "Kavya", "Rahul", "Sanya", "Aarav", "Diya", "Kabir", "Myra"];
 const FILES = ["file1", "file2"];
 const ACTIONS = ["read", "write"];
 const POLICIES = [
