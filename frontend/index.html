@@ -1159,11 +1159,14 @@
   }
   </script>
   <script>
+    const apiParams = new URLSearchParams(window.location.search);
+    const configuredApiBase = apiParams.get("api") || localStorage.getItem("OS_SECURITY_API_BASE") || "";
     const apiHost = window.location.hostname || "127.0.0.1";
-    window.OS_SECURITY_API_BASE = `http://${apiHost}:5000`;
+    window.OS_SECURITY_API_BASE = configuredApiBase || `http://${apiHost}:5000`;
     window.getOSSecurityApiCandidates = function getOSSecurityApiCandidates() {
       const candidates = [
         window.OS_SECURITY_API_BASE,
+        configuredApiBase,
         `http://${apiHost}:5000`,
         "http://localhost:5000",
         "http://127.0.0.1:5000"
@@ -1509,7 +1512,7 @@
         return "Current objects are: file1: level 2, file2: level 1.";
       }
       if (message.includes("backend") || message.includes("disconnected")) {
-        return "Start the backend with npm run start:backend, then open the page at http://127.0.0.1:8080.";
+        return "Start the backend on the main PC, then open the frontend using that PC's LAN IP address, for example http://192.168.1.10:8080. The app will connect to the backend on the same host at port 5000.";
       }
       return "I am ready to help with your OS Security Framework. Ask me about Bell LaPadula, Biba, subjects, objects, read/write access, or how this project works.";
     }

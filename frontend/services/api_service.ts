@@ -3,16 +3,45 @@ import { AccessCheckRequest, AccessCheckResponse, BackendConfig } from "../type/
 declare global {
   interface Window {
     OS_SECURITY_API_BASE?: string;
+    OS_SECURITY_API_CANDIDATES?: string[];
+    getOSSecurityApiCandidates?: () => string[];
   }
 }
 
-const API_BASE =
-  window.OS_SECURITY_API_BASE ||
-  "http://127.0.0.1:5000";
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 500; // milliseconds
 const REQUEST_TIMEOUT = 15000; // milliseconds
 const HEALTH_TIMEOUT = 3000; // milliseconds
+const API_PORT = 5000;
+
+function normalizeApiBase(apiBase: string): string {
+  return apiBase.replace(/\/+$/, "");
+}
+
+function getApiCandidates(): string[] {
+  const configuredCandidates = window.getOSSecurityApiCandidates?.() || window.OS_SECURITY_API_CANDIDATES || [];
+  const pageHost = window.location.hostname || "127.0.0.1";
+  const candidates = [
+    window.OS_SECURITY_API_BASE,
+    ...configuredCandidates,
+    `${window.location.protocol}//${pageHost}:${API_PORT}`,
+    `http://${pageHost}:${API_PORT}`,
+    "http://localhost:5000",
+    "http://127.0.0.1:5000",
+  ];
+
+  return Array.from(
+    new Set(
+      candidates
+        .filter((candidate): candidate is string => Boolean(candidate))
+        .map(normalizeApiBase)
+    )
+  );
+}
+
+function rememberApiBase(apiBase: string): void {
+  window.OS_SECURITY_API_BASE = normalizeApiBase(apiBase);
+}
 
 /**
  * Retry logic for failed requests
@@ -38,7 +67,7 @@ async function fetchWithRetry(
       return fetchWithRetry(url, options, retries - 1, timeoutMs);
     }
     if (error instanceof DOMException && error.name === "AbortError") {
-      throw new Error(`Backend request timed out. Make sure ${API_BASE} is running.`);
+      throw new Error("Backend request timed out. Make sure the backend is running and reachable from this device.");
     }
     throw error;
   } finally {
@@ -46,11 +75,34 @@ async function fetchWithRetry(
   }
 }
 
+async function fetchFromBackend(
+  path: string,
+  options: RequestInit,
+  retries: number = MAX_RETRIES,
+  timeoutMs: number = REQUEST_TIMEOUT
+): Promise<Response> {
+  let lastError: unknown = null;
+
+  for (const apiBase of getApiCandidates()) {
+    try {
+      const response = await fetchWithRetry(`${apiBase}${path}`, options, retries, timeoutMs);
+      rememberApiBase(apiBase);
+      return response;
+    } catch (error) {
+      lastError = error;
+    }
+  }
+
+  const candidates = getApiCandidates().join(", ");
+  const detail = lastError instanceof Error ? ` Last error: ${lastError.message}` : "";
+  throw new Error(`Backend disconnected. Tried: ${candidates}.${detail}`);
+}
+
 export async function checkAccess(
   payload: AccessCheckRequest
 ): Promise<AccessCheckResponse> {
-  const response = await fetchWithRetry(
-    `${API_BASE}/check-access`,
+  const response = await fetchFromBackend(
+    "/check-access",
     {
       method: "POST",
       headers: {
@@ -72,8 +124,8 @@ export async function checkAccess(
 }
 
 export async function getBackendConfig(): Promise<BackendConfig> {
-  const response = await fetchWithRetry(
-    `${API_BASE}/config`,
+  const response = await fetchFromBackend(
+    "/config",
     { method: "GET" },
     1,
     HEALTH_TIMEOUT
@@ -91,8 +143,8 @@ export async function getBackendConfig(): Promise<BackendConfig> {
  */
 export async function checkBackendHealth(): Promise<boolean> {
   try {
-    const response = await fetchWithRetry(
-      `${API_BASE}/status`,
+    const response = await fetchFromBackend(
+      "/status",
       { method: "GET" },
       1,
       HEALTH_TIMEOUT

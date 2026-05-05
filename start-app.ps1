@@ -44,6 +44,22 @@ function Import-EnvFile {
     }
 }
 
+function Get-LanIpAddress {
+    $address = Get-NetIPAddress -AddressFamily IPv4 -ErrorAction SilentlyContinue |
+        Where-Object {
+            $_.IPAddress -notlike "127.*" -and
+            $_.IPAddress -notlike "169.254.*" -and
+            $_.PrefixOrigin -ne "WellKnown"
+        } |
+        Select-Object -First 1 -ExpandProperty IPAddress
+
+    if ($address) {
+        return $address
+    }
+
+    return "YOUR_PC_IP"
+}
+
 $root = Split-Path -Parent $MyInvocation.MyCommand.Path
 Set-Location $root
 Import-EnvFile -Path (Join-Path $root ".env")
@@ -91,4 +107,5 @@ if (Test-PortOpen -HostName "127.0.0.1" -Port 8080) {
 
 Write-Host ""
 Write-Host "Open: http://127.0.0.1:8080" -ForegroundColor Cyan
+Write-Host "Open from another laptop on the same Wi-Fi/LAN: http://$(Get-LanIpAddress):8080" -ForegroundColor Cyan
 Write-Host "Keep this terminal if you want the status message; the servers are running in the background." -ForegroundColor DarkGray
