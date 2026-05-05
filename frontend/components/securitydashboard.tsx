@@ -252,7 +252,7 @@ export default function SecurityDashboard() {
       <div style={{ display: "grid", gap: 12 }}>
         <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 12 }}>
           <span style={{ color: "#2563eb", fontSize: "0.9rem", textTransform: "uppercase", letterSpacing: "0.16em" }}>
-            Policy evaluation
+            Evaluation
           </span>
           <span
             style={{

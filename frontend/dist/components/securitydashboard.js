@@ -215,7 +215,7 @@ export default function SecurityDashboard() {
     }, []);
     const activePolicy = POLICIES.find((item) => item.id === policy);
     const availablePolicies = POLICIES.filter((item) => backendConfig.policies.includes(item.id));
-    return (_jsxs("div", { style: containerStyle, children: [_jsxs("div", { style: { display: "grid", gap: 12 }, children: [_jsxs("div", { style: { display: "flex", flexWrap: "wrap", alignItems: "center", gap: 12 }, children: [_jsx("span", { style: { color: "#2563eb", fontSize: "0.9rem", textTransform: "uppercase", letterSpacing: "0.16em" }, children: "Policy evaluation" }), _jsxs("span", { style: {
+    return (_jsxs("div", { style: containerStyle, children: [_jsxs("div", { style: { display: "grid", gap: 12 }, children: [_jsxs("div", { style: { display: "flex", flexWrap: "wrap", alignItems: "center", gap: 12 }, children: [_jsx("span", { style: { color: "#2563eb", fontSize: "0.9rem", textTransform: "uppercase", letterSpacing: "0.16em" }, children: "Evaluation" }), _jsxs("span", { style: {
                                     padding: "10px 14px",
                                     borderRadius: 999,
                                     background: backendStatus === "connected" ? "#dcfce7" : backendStatus === "loading" ? "#fef3c7" : "#fee2e2",
