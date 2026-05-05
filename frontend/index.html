@@ -1161,6 +1161,16 @@
   <script>
     const apiHost = window.location.hostname || "127.0.0.1";
     window.OS_SECURITY_API_BASE = `http://${apiHost}:5000`;
+    window.getOSSecurityApiCandidates = function getOSSecurityApiCandidates() {
+      const candidates = [
+        window.OS_SECURITY_API_BASE,
+        `http://${apiHost}:5000`,
+        "http://localhost:5000",
+        "http://127.0.0.1:5000"
+      ];
+
+      return Array.from(new Set(candidates.filter(Boolean)));
+    };
   </script>
 </head>
 <body>
@@ -1448,19 +1458,60 @@
 
     function fallbackChatReply(text) {
       const message = text.toLowerCase();
-      if (message.includes("bell")) {
-        return "Bell LaPadula protects confidentiality with no read-up and no write-down rules.";
+      const subjects = {
+        uday: { name: "Uday", level: 3 },
+        rishu: { name: "Rishu", level: 1 },
+        anisha: { name: "Anisha", level: 2 },
+        kavya: { name: "Kavya", level: 1 },
+        rahul: { name: "Rahul", level: 2 },
+        sanya: { name: "Sanya", level: 1 },
+        aarav: { name: "Aarav", level: 2 },
+        diya: { name: "Diya", level: 1 },
+        kabir: { name: "Kabir", level: 2 },
+        myra: { name: "Myra", level: 1 }
+      };
+      const objects = {
+        file1: { name: "file1", level: 2 },
+        file2: { name: "file2", level: 1 }
+      };
+
+      const subject = Object.entries(subjects).find(([key]) => message.includes(key))?.[1];
+      const object = Object.entries(objects).find(([key]) => message.includes(key))?.[1];
+      const action = message.includes("read") ? "read" : message.includes("write") ? "write" : "";
+      const policy = message.includes("biba") ? "biba" : "bell";
+
+      if (subject && object && action) {
+        const allowed = policy === "bell"
+          ? action === "read" ? subject.level >= object.level : subject.level <= object.level
+          : action === "read" ? subject.level <= object.level : subject.level >= object.level;
+        const rule = policy === "bell"
+          ? action === "read" ? "no read-up" : "no write-down"
+          : action === "read" ? "no read-down" : "no write-up";
+        return `${allowed ? "Allowed" : "Denied"}. ${subject.name} has level ${subject.level}, ${object.name} has level ${object.level}, action is ${action}, and policy is ${policy}. The ${policy} ${rule} rule ${allowed ? "passes" : "blocks this request"}.`;
+      }
+
+      if (message.includes("who are you") || message.includes("your name")) {
+        return "I am the OS Security Framework assistant. I help explain Bell LaPadula, Biba, subjects, objects, and access decisions.";
+      }
+      if (message.includes("how are you") || message.includes("kaise ho")) {
+        return "I am running well and ready to help with your OS Security Framework.";
+      }
+      if (message.includes("bell") || message.includes("lapadula")) {
+        return "Bell LaPadula protects confidentiality. Read is allowed when subject level is greater than or equal to object level, and write is allowed when subject level is less than or equal to object level.";
       }
       if (message.includes("biba")) {
-        return "Biba protects integrity with no read-down and no write-up rules.";
+        return "Biba protects integrity. Read is allowed when subject level is less than or equal to object level, and write is allowed when subject level is greater than or equal to object level.";
       }
       if (message.includes("subject") || message.includes("user")) {
-        return "Subjects are users or processes with security levels, such as Uday, Rishu, and Anisha.";
+        return "Current subjects are: Uday: level 3, Rishu: level 1, Anisha: level 2, Kavya: level 1, Rahul: level 2, Sanya: level 1, Aarav: level 2, Diya: level 1, Kabir: level 2, Myra: level 1.";
+      }
+      if (message.includes("object") || message.includes("file")) {
+        return "Current objects are: file1: level 2, file2: level 1.";
       }
       if (message.includes("backend") || message.includes("disconnected")) {
         return "Start the backend with npm run start:backend, then open the page at http://127.0.0.1:8080.";
       }
-      return "I can answer questions about Bell LaPadula, Biba, subjects, objects, and backend setup.";
+      return "I am ready to help with your OS Security Framework. Ask me about Bell LaPadula, Biba, subjects, objects, read/write access, or how this project works.";
     }
 
     async function sendChatMessage(text) {
@@ -1475,11 +1526,25 @@
       showTyping();
 
       try {
-        const response = await fetch(`${window.OS_SECURITY_API_BASE}/chatbot`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message: trimmed }),
-        });
+        let response = null;
+
+        for (const apiBase of window.getOSSecurityApiCandidates()) {
+          try {
+            response = await fetch(`${apiBase}/chatbot`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ message: trimmed }),
+            });
+            window.OS_SECURITY_API_BASE = apiBase;
+            break;
+          } catch {
+            response = null;
+          }
+        }
+
+        if (!response) {
+          throw new Error("Backend unavailable");
+        }
 
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}`);
