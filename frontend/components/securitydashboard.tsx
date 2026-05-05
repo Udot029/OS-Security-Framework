@@ -6,8 +6,8 @@ const SUBJECTS = ["Uday", "Rishu", "Anisha", "Kavya", "Rahul", "Sanya", "Aarav",
 const FILES = ["file1", "file2"];
 const ACTIONS = ["read", "write"] as const;
 const POLICIES = [
-  { id: "bell", label: "Bell LaPadula", description: "Confidentiality model with no read-up and no write-down enforcement." },
-  { id: "biba", label: "Biba", description: "Integrity model with no read-down and no write-up enforcement." },
+  { id: "bell", label: "Bell LaPadula", description: "Confidentiality model ." },
+  { id: "biba", label: "Biba", description: "Integrity model." },
 ] as const;
 
 const SUBJECT_LEVELS: Record<string, number> = {
@@ -158,18 +158,18 @@ export default function SecurityDashboard() {
     if (policy === "bell") {
       if (action === "read") {
         allowed = sLvl >= oLvl;
-        reason = allowed ? "Allowed: subject can read at or below its clearance." : "Denied: Bell no read-up rule violated.";
+        reason = allowed ? "Allowed: subject can read ." : "Denied: Bell no read up rule violated.";
       } else {
         allowed = sLvl <= oLvl;
-        reason = allowed ? "Allowed: subject can write at or above its clearance." : "Denied: Bell no write-down rule violated.";
+        reason = allowed ? "Allowed: subject can write ." : "Denied: Bell no write down rule violated.";
       }
     } else {
       if (action === "read") {
         allowed = sLvl <= oLvl;
-        reason = allowed ? "Allowed: subject can read at or above its integrity." : "Denied: Biba no read-down rule violated.";
+        reason = allowed ? "Allowed: subject can read ." : "Denied: Biba no read down rule violated.";
       } else {
         allowed = sLvl >= oLvl;
-        reason = allowed ? "Allowed: subject can write at or below its integrity." : "Denied: Biba no write-up rule violated.";
+        reason = allowed ? "Allowed: subject can write ." : "Denied: Biba no write up rule violated.";
       }
     }
 
@@ -237,7 +237,7 @@ export default function SecurityDashboard() {
     await runAccessCheck();
   }
 
-  // Check backend status on mount and periodically
+ 
   useEffect(() => {
     loadBackendConfig();
     const interval = setInterval(checkBackendStatus, 10000);
@@ -267,9 +267,9 @@ export default function SecurityDashboard() {
             Backend: {backendStatus === "loading" ? "Checking..." : backendStatus === "connected" ? "Connected" : "Disconnected"}
           </span>
         </div>
-        <h2 style={{ margin: 0, fontSize: "2rem", color: "#111827" }}>Realtime OS access control dashboard</h2>
+        <h2 style={{ margin: 0, fontSize: "2rem", color: "#111827" }}>Dashboard</h2>
         <p style={{ margin: 0, color: "#475569", fontSize: "1rem", lineHeight: 1.8 }}>
-          Select a subject, object, action, and security model, then submit the request to see an allow or deny decision from the backend guard.
+          Security check is running...
         </p>
       </div>
 
@@ -384,21 +384,16 @@ export default function SecurityDashboard() {
                 onClick={runAccessCheck}
                 style={{ ...buttonStyle, opacity: loading ? 0.7 : 1 }}
               >
-                {loading ? "Evaluating policy..." : "Run access check"}
+                {loading ? "Evaluation..." : "Run access check"}
               </button>
               <div style={{ minHeight: 24, color: loading ? "#2563eb" : response ? (response.allowed ? "#166534" : "#991b1b") : "#64748b", fontWeight: 700 }}>
                 {loading
-                  ? "Sending request to backend..."
+                  ? "Sending request ..."
                   : response
                     ? `${response.allowed ? "Access allowed" : "Access denied"}${lastCheckedAt ? ` at ${lastCheckedAt}` : ""}`
                     : "Ready to run access check"}
               </div>
             </form>
-
-            <div style={cardStyle}>
-              <h3 style={{ margin: "0 0 10px", fontSize: "1.1rem", color: "#0f172a" }}>Selected policy</h3>
-              <p style={{ margin: 0, color: "#475569", lineHeight: 1.7 }}>{activePolicy?.description}</p>
-            </div>
           </div>
 
           <div style={cardStyle}>
@@ -436,47 +431,9 @@ export default function SecurityDashboard() {
           </div>
         </div>
       </div>
-
-      {error && (
-        <div style={{ padding: 20, borderRadius: 22, background: "#ffe4e6", border: "1px solid rgba(191, 90, 242, 0.18)", color: "#991b1b" }}>
-          <strong>Error:</strong> {error}
-        </div>
-      )}
-
-      {response && (
-        <div style={{ display: "grid", gap: 20, padding: 24, borderRadius: 28, background: "#0f172a", color: "#f8fafc" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16 }}>
-            <div>
-              <span style={{ display: "inline-flex", alignItems: "center", gap: 8, background: response.allowed ? "#1d4ed8" : "#991b1b", padding: "10px 16px", borderRadius: 999, fontWeight: 700 }}>
-                {response.allowed ? "Access allowed" : "Access denied"}
-              </span>
-            </div>
-            <span style={{ color: "#cbd5e1", fontSize: "0.95rem" }}>Return code: {response.code}</span>
-          </div>
-
-          <div style={{ display: "grid", gap: 12 }}>
-            <div style={{ display: "flex", justifyContent: "space-between" }}>
-              <span>Guard output</span>
-              <strong>{response.output || "No output"}</strong>
-            </div>
-            <div style={{ display: "flex", justifyContent: "space-between" }}>
-              <span>Error</span>
-              <strong>{response.error || "None"}</strong>
-            </div>
-          </div>
-
-          <div style={{ display: "grid", gap: 14, padding: 18, borderRadius: 22, background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.12)" }}>
-            <h4 style={{ margin: 0, fontSize: "1rem", color: "#e2e8f0" }}>Request payload</h4>
-            <pre style={{ margin: 0, whiteSpace: "pre-wrap", wordBreak: "break-word", color: "#dbeafe", fontSize: "0.95rem" }}>
-              {JSON.stringify(requestPayload, null, 2)}
-            </pre>
-          </div>
-        </div>
-      )}
-
       {history.length > 0 && (
         <div style={cardStyle}>
-          <h3 style={{ margin: "0 0 18px", color: "#0f172a" }}>Recent decision history</h3>
+          <h3 style={{ margin: "0 0 18px", color: "#0f172a" }}>History</h3>
           <div style={{ display: "grid", gap: 14 }}>
             {history.map((entry, index) => (
               <div key={index} style={{ display: "grid", gap: 8, padding: 16, borderRadius: 20, background: "#f8fafc", border: "1px solid rgba(148, 163, 184, 0.16)" }}>

@@ -7,7 +7,6 @@ import logging
 
 app = Flask(__name__)
 
-# Enable CORS with proper configuration
 CORS(app, resources={
     r"/*": {
         "origins": "*",
@@ -118,11 +117,11 @@ def check_access():
             "code": 500
         }), 500
 if __name__ == "__main__":
-    # Run with proper configuration for development
+    
     app.run(
         host="0.0.0.0",
         port=5000,
-        debug=False,  # Set to False to prevent reload issues
-        use_reloader=False,  # Disable reloader to maintain connection
-        threaded=True  # Enable threading for concurrent requests
+        debug=False,  
+        use_reloader=False, 
+        threaded=True 
     )

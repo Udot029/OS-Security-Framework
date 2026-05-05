@@ -57,7 +57,7 @@ function App() {
           <span style={{ color: "#2563eb", fontWeight: 700, textTransform: "uppercase", fontSize: "0.82rem", letterSpacing: "0.2em" }}>
             OS Security Framework
           </span>
-            <h1 style={heading}>Interactive Access Control Dashboard</h1>
+            <h1 style={heading}>Dashboard</h1>
             <p style={subhead}>
               Explore how access decisions work in real time with a simple and clear dashboard.
               Try different scenarios, see results instantly, and understand system behavior step by step.
@@ -66,22 +66,17 @@ function App() {
 
         <div style={metricGrid}>  
           <strong style={{ fontSize: "1.15rem", color: "#0f172a" }}>Live Access Check</strong>
-          <p style={{ margin: "12px 0 0", color: "#475569" }}>
-            Submit a request and see the result instantly.
+          <p style={{ margin: "12px 0 0", color: "rgb(71, 85, 105)" }}>
+            Submit a request and see the result.
           </p>
         </div>
         <div style={metricCard}>
           <strong style={{ fontSize: "1.15rem", color: "#0f172a" }}>Two Models</strong>
           <p style={{ margin: "12px 0 0", color: "#475569" }}>
-            Switch between Bell-LaPadula and Biba to explore different scenarios.
+            Switch between Bell-LaPadula and Biba.
           </p>
         </div>
-        <div style={metricCard}>
-          <strong style={{ fontSize: "1.15rem", color: "#0f172a" }}>Clear Results</strong>
-          <p style={{ margin: "12px 0 0", color: "#475569" }}>
-            View recent decisions and understand what happened at a glance.
-          </p>
-        </div>
+        
       </div>
       <div style={{ width: "100%", maxWidth: 1080, marginTop: 28 }}>
         <SecurityDashboard />
