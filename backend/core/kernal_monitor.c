@@ -18,14 +18,25 @@ static void trim_newline(char *s) {
     size_t n = strlen(s);
     if (n && (s[n-1] == '\n' || s[n-1] == '\r')) s[n-1] = '\0';
 }
+int simple_hash(const char *input) {
+    unsigned int hash = 5381;
+    int c;
+    while ((c = (unsigned char)*input++) != '\0') {
+        hash = ((hash << 5) + hash) + c;
+    }
+    return (int)(hash & 0x7fffffff);
+}
+int verify_integrity(const char *data, int expected_hash) {
+    return simple_hash(data) == expected_hash;
+}
 int check_bell(int s_lvl, int o_lvl, const char* action) {
-    if (strcmp(action, "read") == 0)  return (s_lvl >= o_lvl); // no read up
-    if (strcmp(action, "write") == 0) return (s_lvl <= o_lvl); // no write down
+    if (strcmp(action, "read") == 0)  return (s_lvl >= o_lvl); 
+    if (strcmp(action, "write") == 0) return (s_lvl <= o_lvl); 
     return -1;
 }
 int check_biba(int s_lvl, int o_lvl, const char* action) {
-    if (strcmp(action, "read") == 0)  return (s_lvl <= o_lvl); // no read down
-    if (strcmp(action, "write") == 0) return (s_lvl >= o_lvl); // no write up
+    if (strcmp(action, "read") == 0)  return (s_lvl <= o_lvl); 
+    if (strcmp(action, "write") == 0) return (s_lvl >= o_lvl); 
     return -1;
 }
 int main(int argc, char *argv[]) {
